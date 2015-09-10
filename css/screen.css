@@ -28,12 +28,19 @@ form {
 }
 
 .popup-content {
-    height: 250px;
+    height: 350px;
     overflow-y: scroll;
 }
 
 .map-label {
     z-index: 9000638;
+}
+
+.share {
+    font-size: large;
+}
+.share a {
+    padding-left: 7px;
 }
 
 #clear {
@@ -55,4 +62,28 @@ input.search-query {
     font-size: 10pt !important;
     padding-top: 3px !important;
     padding-bottom: 3px !important;
+}
+.input-append .add-on,.input-append .btn,.input-append .btn-group{
+    margin-left:-4px;
+}
+.input-append .btn {
+  border-radius: 0 14px 14px 0;
+}
+.input-append {
+    display: inline-block;
+    vertical-align:middle;
+    margin-bottom: 0;
+}
+.search-query {
+    border-top-left-radius: 14px;
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+    border-bottom-left-radius: 14px;
+}
+.leaflet-tile-container img {
+ webkit-backface-visibility: hidden;
+}
+.popup-content #street-view{
+    width: 294px;
+    height: 210px;
 }
