@@ -40,6 +40,12 @@ class Comment
      **/
     protected $status;
 
+
+    /** @Column(type="string", nullable=true) 
+      * @var string
+      **/
+    protected $publishpassword;
+
     /**  @Column(type="integer") 
      * @var int
      **/
@@ -100,6 +106,30 @@ class Comment
     public function setCreatorEmail($creatoremail)
     {
         $this->creatoremail = $creatoremail;
+    }
+
+    private function generateRandomString($length = 10) {
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charactersLength = strlen($characters);
+	$randomString = '';
+        for ($i = 0; $i < $length; $i++) {
+          $randomString .= $characters[rand(0, $charactersLength - 1)];
+        }
+        return $randomString;
+    }
+    public function setPublishPassword() 
+    {
+        $pw = self::generateRandomString();
+        $this->publishpassword = $pw;
+	return $pw;
+    }    
+
+    public function publish($pw) {
+           if ($pw == $this->publishpassword) {
+	         $this->publishpassword = NULL;
+		 return true;
+           }
+	   return false;
     }
 
     public function getStatus()

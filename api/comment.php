@@ -12,6 +12,9 @@ $validation_cfg = array(
 );
 
 $app = new \Slim\Slim();
+$app->get('/test', function () {
+phpinfo();
+});
 $app->post('/new', function () {
     global   $entityManager;
     global   $validation_cfg;
@@ -32,8 +35,28 @@ $app->post('/new', function () {
         $comment->setCreatorEmail($data->email);
         $comment->setStatus(1);
         $comment->setLfnr($data->id);
+	$pw=$comment->setPublishPassword();
         $entityManager->persist($comment);
         $entityManager->flush();
+	$url = 'https://'.$_SERVER["HTTP_HOST"].$request->getRootUri();
+	$url=preg_replace('/api\/.*/', '', $url);
+	$url.='comment_freigabe.php?id='.$comment->getId().'&pw='.$pw.'&lfnr='.$data->id;
+	$to      = 'adfc-freigabe@sven.anders.hamburg';
+	$subject = '[ADFC-Map] Neuer Kommentar Nr. '.$comment->getId().' Unfallstelle '. $data->id;
+	$message = "Bitte den Kommentar freigeben: \r\n".
+		 "Von: ".$data->usr." ".$data->email. "\r\n" .
+		 "Betreff: ".$data->subject. "\r\n" .
+		 $data->comment. "\r\n" .
+		 'Bitte besuchen Sie die Webseite: '. "\r\n" .
+	            $url ."\r\n" .
+		    'um eine Entscheidung zu treffen'. "\r\n";
+
+	$headers = 'From: webmaster@sven.anders.hamburg' . "\r\n" .
+	'Reply-To: adfc2015@sven.anders.hamburg' . "\r\n" .
+	'X-Mailer: PHP/' . phpversion();
+
+	mail($to, $subject, $message, $headers);
+
         $out= array(
           'status' => 1,
 	  'id' => $comment->getId()
