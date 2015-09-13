@@ -74,7 +74,7 @@ private function validEmail($email)
 }
 
 
-private function validate_field($value, $cfg) {
+public function validate_field($value, $cfg) {
     $err=array();
     foreach ($cfg as $validator) {
         switch ($validator) {

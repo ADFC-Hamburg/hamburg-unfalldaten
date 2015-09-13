@@ -392,7 +392,7 @@ function clearErr() {
     $('#comments').find('.has-error').each(function (ele) {
 	$(this).removeClass('has-error').removeClass('has-feedback');
     });
-
+    $('#newcommentmsg').hide();
 };
 function addComment() {
     var data= {
@@ -420,7 +420,7 @@ function addComment() {
         $('#comment-send-btn').button("reset");
 	if (d.status==1) {
 	    $('#comment-send-btn').hide();
-	    $('#newcommentmsg').text("Vielen Dank, der Kommentar wurde gespeichert. Wir melden uns bei Ihnen per E-Mail sobald dieser angezeigt wird.");
+	    $('#newcommentmsg').removeClass().addClass('alert alert-success').text("Vielen Dank, der Kommentar wurde gespeichert. Wir melden uns bei Ihnen per E-Mail sobald dieser angezeigt wird.").show();
 	} else if (d.status==2) {
 	    $('#comment-send-btn').button("reset");
 	    $('#newcomment').show();
@@ -441,7 +441,7 @@ function addComment() {
 	$('#newcomment').show();
 	$('#comment-send-btn').button("reset");
 	console.log('fail', jqXHR, textStatus, errorThrown);
-	$('#newcommentmsg').text("Leider gab es beim Speichern einen unvorhergesehen Fehler. Bitte informieren Sie den Admin unter: adfc2015@sven.anders.hamburg");
+	$('#newcommentmsg').removeClass().addClass('alert alert-danger').text("Leider gab es beim Speichern einen unvorhergesehen Fehler. Bitte informieren Sie den Admin unter: adfc2015@sven.anders.hamburg").show();
     });
 }
 

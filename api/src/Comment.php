@@ -124,6 +124,13 @@ class Comment
 	return $pw;
     }    
 
+    public function checkPublishPw($pw) {
+           if ($pw == $this->publishpassword) {
+		 return true;
+           }
+	   return false;
+    }
+
     public function publish($pw) {
            if ($pw == $this->publishpassword) {
 	         $this->publishpassword = NULL;

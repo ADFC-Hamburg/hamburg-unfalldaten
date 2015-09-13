@@ -12,8 +12,79 @@ $validation_cfg = array(
 );
 
 $app = new \Slim\Slim();
-$app->get('/test', function () {
-phpinfo();
+$app->get('/count/:lfnr', function ($lfnr) {
+    global   $entityManager;
+    $val=Validator::validate_field($lfnr, ['int']);
+    if (sizeof($val)>0) {
+	   $app->halt(400, $val[0]);
+    }
+
+    $repository = $entityManager->getRepository('Comment');
+     $comments = $repository->findBy(array('lfnr' => $lfnr, 'publishpassword' => null));
+     $commentsAll = $repository->findBy(array('lfnr' => $lfnr ));
+
+    $out= array(
+          'published' => count($comments),
+          'waiting' => count($commentsAll)-count($comments)
+        );
+    
+    echo json_encode($out);
+
+});
+$app->get('/getAll/:lfnr', function ($lfnr) {
+    global   $entityManager;
+    $val=Validator::validate_field($lfnr, ['int']);
+    if (sizeof($val)>0) {
+	   $app->halt(400, $val[0]);
+    }
+    $repository = $entityManager->getRepository('Comment');
+    $comments = $repository->findBy(array('lfnr' => $lfnr, 'publishpassword' => null));
+    $out= array();
+    foreach ($comments as $comment) {
+       $ele= array(
+         'id' => $comment->getId(),
+	 'subject' => $comment->getSubject(),
+	 'description' => $comment->getDescription(),
+	 'creator' => $comment->getCreator(),
+	 'created' => $comment->getCreated(),
+       );
+       $out[]= $ele;
+    };
+    echo json_encode($out);
+//     print_r($comments);
+});
+$app->get('/publish/:id/:pw/:action', function ($id, $pw, $action) {
+    global   $entityManager;
+    global   $app;
+    $val=Validator::validate_field($id, ['int']);
+    if (sizeof($val)>0) {
+	   $app->halt(400, $val[0]);
+    }
+    if (($pw === '') || ($pw === null)) {
+	   $app->halt(400, 'Passwort fehlt');
+    }
+    $comment = $entityManager->find('Comment', $id);
+    if ($comment === null) {
+	   $app->halt(410, 'Kommentar nicht gefunden');
+    }
+    if ($action == 'true') {
+       if ($comment->publish($pw)) {
+           $entityManager->persist($comment);
+           $entityManager->flush();
+	   $app->halt(200, 'Published');
+       } else {
+          $app->halt(401, 'Falsches Passwort');
+       }
+    } else {
+       if ($comment->checkPublishPw($pw)) {
+           $entityManager->remove($comment);
+           $entityManager->flush();
+	   $app->halt(200, 'Geloescht');
+       } else {
+          $app->halt(401, 'Falsches Passwort');
+       }
+    }
+
 });
 $app->post('/new', function () {
     global   $entityManager;
@@ -41,15 +112,19 @@ $app->post('/new', function () {
 	$url = 'https://'.$_SERVER["HTTP_HOST"].$request->getRootUri();
 	$url=preg_replace('/api\/.*/', '', $url);
 	$url.='comment_freigabe.php?id='.$comment->getId().'&pw='.$pw.'&lfnr='.$data->id;
+	$jaurl=$url."&action=true";
+	$neinurl=$url."&action=false";
 	$to      = 'adfc-freigabe@sven.anders.hamburg';
 	$subject = '[ADFC-Map] Neuer Kommentar Nr. '.$comment->getId().' Unfallstelle '. $data->id;
 	$message = "Bitte den Kommentar freigeben: \r\n".
 		 "Von: ".$data->usr." ".$data->email. "\r\n" .
 		 "Betreff: ".$data->subject. "\r\n" .
-		 $data->comment. "\r\n" .
-		 'Bitte besuchen Sie die Webseite: '. "\r\n" .
-	            $url ."\r\n" .
-		    'um eine Entscheidung zu treffen'. "\r\n";
+		 $data->comment. "\r\n\r\n" .
+		 'Um den Kommentar freizugeben Besuchen Sie bitte die Webseite: '. "\r\n" .
+	            $jaurl ."\r\n\r\n" .
+		 'Um den Kommentar zu entfernen Besuchen Sie bitte die Webseite: '. "\r\n" .
+	            $neinurl ."\r\n\r\n" ;
+
 
 	$headers = 'From: webmaster@sven.anders.hamburg' . "\r\n" .
 	'Reply-To: adfc2015@sven.anders.hamburg' . "\r\n" .
