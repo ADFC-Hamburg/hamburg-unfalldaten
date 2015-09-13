@@ -1,25 +1,44 @@
-Simple Leaflet map template for putting points on a map.
+### Requirements:
 
-<img src="https://raw.github.com/perrygeo/leaflet-simple-csv/master/img/screenshot1.png" alt="Leaflet" />
+* webserver with php 
+* git
+* bower
+* php composer
+* Unfalldaten der Stadt Hamburg
 
-### Features
-* Data is in tabular delimited-text (csv, etc.) with two required columns: `lat` and `lng`
-* Points are plotted on full-screen [Leaflet](https://github.com/Leaflet/Leaflet) map
-* Point markers are clustered dynamically based on zoom level.
-* Clicking on a point cluster will zoom into the extent of the underlying features.
-* Hovering on the point will display the name. 
-* Clicking will display a popup with columns/properties displayed as an html table.
-* Full text filtering with typeahead
-* Completely client-side javascript with all dependencies included or linked via CDN
+### Install
 
-### Usage
-Download, add your own data csv, copy the `config.js.template` to `config.js`, edit it according to your needs, then load index.html in a browser.
+``` bash
+git clone git@gitlab.com:tabacha-de/adfchh-map.git
+cd adfchh-map/
+bower install
+cp $PATH_TO_UNFALLDATEN/RF_2014_Anonym.txt data/
+cd api/
+$PATH_TO_COMPOSER/composer.phar install
+```
+
+* Open bootstrap.php and change the path to sql-lite to a place you like.
+* Create an empty comment sql databes with:
+``` 
+cd api
+vendor/bin/doctrine orm:schema-tool:create
+```
+* Configure Apache to use the adfchh-map as a base directory
+
+### Update
+``` bash
+ cd adfchh-map
+ git pull
+ bower install
+ cd api
+ $PATH_TO_COMPOSER/composer.phar install
+ vendor/bin/doctrine orm:schema-tool:update
+```
 
 ### Thanks to...
-
+* [Perrygeo Leaflet simple cvs](https://github.com/perrygeo/leaflet-simple-csv)
 * [Leaflet](https://github.com/Leaflet/Leaflet)
 * [Leaflet.geoCSV](https://github.com/joker-x/Leaflet.geoCSV)
 * [Leaflet.markercluster](https://github.com/Leaflet/Leaflet.markercluster)
 * [Twitter Boostrap](http://twitter.github.io/bootstrap/)
 * [jQuery](http://jquery.com/)
-
