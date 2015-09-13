@@ -382,6 +382,18 @@ var popupOpt = {
     
 };
 
+function clearErr() {
+    $('#comments').find('.help-block').each(function (ele) {
+	$(this).remove();
+    });
+    $('#comments').find('.form-control-feedback').each(function (ele) {
+	$(this).remove();
+    });
+    $('#comments').find('.has-error').each(function (ele) {
+	$(this).removeClass('has-error').removeClass('has-feedback');
+    });
+
+};
 function addComment() {
     var data= {
 	id:$("#comment-id").val(),
@@ -400,15 +412,7 @@ function addComment() {
     };
 
     $('#comment-send-btn').button("loading");
-    $('#comments').find('.help-block').each(function (ele) {
-	$(this).remove();
-    });
-    $('#comments').find('.form-control-feedback').each(function (ele) {
-	$(this).remove();
-    });
-    $('#comments').find('.has-error').each(function (ele) {
-	$(this).removeClass('has-error').removeClass('has-feedback');
-    });
+    clearErr();
     $('#newcomment').hide();
     $.post( "api/comment.php/new", JSON.stringify(data) ).done( function (d) {
 	console.log('done',d);
@@ -444,6 +448,7 @@ function addComment() {
 
 function openComment( id ) {
     map.closePopup();
+    clearErr();
     $('#comment-send-btn').show();
     $('#newcomment').show();
     $('#newcommentmsg').text("");
