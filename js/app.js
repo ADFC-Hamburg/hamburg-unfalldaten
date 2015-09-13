@@ -444,10 +444,34 @@ function addComment() {
 	$('#newcommentmsg').removeClass().addClass('alert alert-danger').text("Leider gab es beim Speichern einen unvorhergesehen Fehler. Bitte informieren Sie den Admin unter: adfc2015@sven.anders.hamburg").show();
     });
 }
-
+function loadComments( lfnr ) {
+    $('#oldcomments').text('Lade Kommentare ...');
+    $.ajax ({
+	type:'GET',
+	dataType:'text',
+	url: 'api/comment.php/getAll/'+lfnr,
+	error: function() {
+	    $('#oldcomments').text('Kommentierung zur Zeit deaktiviert');
+	},
+	success: function(data) {
+	    // FIXME 
+	    var comments=JSON.parse(data);
+	    var container= $('#oldcomments');
+	    container.html('');
+	    for (var i = 0; i < comments.length; i++) {
+		var comment= comments[i];
+		container.append($('<h4>').text(comment.subject));
+		container.append($('<div>').text(comment.description));
+		container.append($('<div>').text('Von: '+comment.creator+' Datum: '+comment.created.date));
+		container.append($('<hr>'));
+	    };
+	}
+    })
+};
 function openComment( id ) {
     map.closePopup();
     clearErr();
+    loadComments(id);
     $('#comment-send-btn').show();
     $('#newcomment').show();
     $('#newcommentmsg').text("");
@@ -475,7 +499,9 @@ var points = L.geoCsv (null, {
 	layer.on('click', function (e) {
 	    var url=window.location.href.split("?")[0]+'?lfnr='+e.target.feature.properties['lfnr'];
 	    var title='Fahrradunfall+Nr.+'+e.target.feature.properties['lfnr']+'+in+2014';
-	    var popup = '<div class="popup-content"><div id="street-view"></div>';
+	    var popupj= $('<div>').addClass('popup-content').append($('<div id="street-view">'));
+	   
+//	    var popup = '<div class="popup-content"><div id="street-view"></div>';
 	    var share='<div class="share">';
 	    share+='<a href="'+url+' title="Link zu diesem Marker""><i class="fa fa-link"></i></a>';
 	    url=encodeURIComponent(url);
@@ -483,8 +509,35 @@ var points = L.geoCsv (null, {
 	    share+='<a href="http://twitter.com/home?status='+title+' - '+url+'"  target="_blank" title="Unfallstelle twittern"><i class="fa fa-twitter"></i></a>';
 	    share+='<a href="mailto:?subject='+title+'&body='+url+'" title="Per E-Mail weiterleiten"><i class="fa fa-envelope"></i></a>';
 	    share+='</div>';
-		popup+='<table class="table table-striped table-bordered table-condensed">';
-	    popup+='<tr><th>Kommentare'+share+'</th><td>0 Kommentare<br/><a href="javascript:openComment('+e.target.feature.properties['lfnr']+');">Schreibe den ersten Kommentar!</a> <br/> <button type="button" class="btn btn-info btn-xs" onClick="openComment('+e.target.feature.properties['lfnr']+');" data-target="#comments">Kommentare</button></td></tr>';
+	    table=$('<table class="table table-striped table-bordered table-condensed">');
+	    var td=$('<td>').text('Suche nach Kommentaren...');
+	    var lfnr=e.target.feature.properties['lfnr'];
+	    $.ajax ({
+		type:'GET',
+		dataType:'text',
+		url: 'api/comment.php/count/'+lfnr,
+		error: function() {
+		    td.text('Kommentierung zur Zeit deaktiviert');
+		},
+		success: function(data) {
+		    data=JSON.parse(data);
+		    console.log(data);
+		    console.log(data.published);
+		    var html=data.published+' Kommentare<br/>';
+		    if (data.waiting>0) {
+			var count=data.published+data.waiting;
+			html=count+' Kommentare (davon  '+data.waiting+' auf Moderation wartend)<br/>';
+		    }
+		    if (data.published+data.waiting==0) {
+			html=html+'<a href="javascript:openComment('+lfnr+');">Schreibe den ersten Kommentar!</a>'
+		    } else {
+			html=html+'<button type="button" class="btn btn-info btn-xs" onClick="openComment('+lfnr+');" data-target="#comments">Kommentare</button>';
+		    }
+		    td.html(html);
+		}
+	    });
+
+	    table.append($('<tr>').append($('<th>').html('Kommentare'+share)).append(td));
 
             for (var clave in e.target.feature.properties) {
 		var title = points.getPropertyTitle(clave).strip();
@@ -512,12 +565,12 @@ var points = L.geoCsv (null, {
                     attr = '<a target="_blank" href="' + attr + '">'+ attr + '</a>';
 		}
 		if ((attr) && (! ignore)) {
-                    popup +='<tr><th title="'+tooltip+'">'+title+'</th><td>'+attr+'</td></tr>';
+                    table.append($('<tr>').html('<th title="'+tooltip+'">'+title+'</th><td>'+attr+'</td>'));
 		}
             }
-            popup+='</table>';
-
-	    e.target._popup.setContent(popup);
+	    popupj.append(table);
+//	    popupj.append($(popup));
+	    e.target._popup.setContent(popupj[0]);
 
 	    var panorama = new google.maps.StreetViewPanorama(
 		document.getElementById('street-view'),

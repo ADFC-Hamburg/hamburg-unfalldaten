@@ -43,6 +43,10 @@ form {
     padding-left: 7px;
 }
 
+#oldcomments {
+    height: 300px;
+    overflow-y: auto;
+}
 #clear {
     display: inline-block;
     position: relative;
