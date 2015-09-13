@@ -12,5 +12,9 @@ $conn = array(
     'driver' => 'pdo_sqlite',
     'path' => '/var/sqlite/adfc/unfalldaten.sqlite',
 );
+
+if (file_exists(dirname(__FILE__) . '/local.settings.php')) {
+  include dirname(__FILE__) . '/local.settings.php';
+};
 // obtaining the entity manager
 $entityManager = \Doctrine\ORM\EntityManager::create($conn, $config);
