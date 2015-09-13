@@ -21,7 +21,7 @@ function validEmail($email)
 {
    $isValid = "";
    $atIndex = strrpos($email, "@");
-   if ($atIndex == -1)
+    if (is_bool($atIndex) && !$atIndex)
    {
       $isValid = "@ Zeichen nicht gefunden".$atIndex;
    }
@@ -73,10 +73,10 @@ function validEmail($email)
             $isValid = 'Lokaler Anteil hat illegale Zeichen';
          }
       }
-      if ($isValid && !(checkdnsrr($domain,"MX") || checkdnsrr($domain,"A")))
+      if (($isValid == '') && !(checkdnsrr($domain,"MX") || checkdnsrr($domain,"A")))
       {
          // domain not found in DNS
-         $isValid = 'Domain nicht im DNS gefunden';
+         $isValid = "Domain: $domain nicht im DNS gefunden";
       }
    }
    return $isValid;
@@ -85,10 +85,10 @@ function validEmail($email)
 
 function validate_field($value, $cfg) {
     $err=array();
-    foreach ($cfg as $value) {
-        switch ($value) {
+    foreach ($cfg as $validator) {
+        switch ($validator) {
     	       case "required":
-	            if (!defined($value)) {
+	            if ($value == '') {
 		      array_push($err,"Bitte geben Sie einen Wert ein!");
                     }
 		    break;
