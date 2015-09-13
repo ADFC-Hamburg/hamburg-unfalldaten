@@ -422,7 +422,6 @@ function addComment() {
 	    $('#comment-send-btn').hide();
 	    $('#newcommentmsg').text("Vielen Dank, der Kommentar wurde gespeichert. Wir melden uns bei Ihnen per E-Mail sobald dieser angezeigt wird.");
 	} else if (d.status==2) {
-	    debugger;
 	    $('#comment-send-btn').button("reset");
 	    $('#newcomment').show();
 	    $.map(d.val, function(value, index) {
