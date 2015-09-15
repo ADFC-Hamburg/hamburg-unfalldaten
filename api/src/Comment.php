@@ -152,6 +152,9 @@ class Comment
     {
         $this->lfnr = $lfnr;
     }
-
+    public function getLfnr()
+    {
+        return $this->lfnr;
+    }
 
 }

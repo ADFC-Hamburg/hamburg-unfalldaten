@@ -56,6 +56,7 @@ $app->get('/getAll/:lfnr', function ($lfnr) {
 $app->get('/publish/:id/:pw/:action', function ($id, $pw, $action) {
     global   $entityManager;
     global   $app;
+    $request = \Slim\Slim::getInstance()->request();
     $val=Validator::validate_field($id, ['int']);
     if (sizeof($val)>0) {
 	   $app->halt(400, $val[0]);
@@ -74,6 +75,26 @@ $app->get('/publish/:id/:pw/:action', function ($id, $pw, $action) {
        if ($comment->publish($pw)) {
            $entityManager->persist($comment);
            $entityManager->flush();
+	   $to      = $comment->getCreatorEmail();
+	   $subject = '[ADFC-Map] Ihr Kommentar zur Unfallstelle Nr.'.$comment->getLfnr() .'wurde freigeben';
+	   $url = 'https://'.$_SERVER["HTTP_HOST"].$request->getRootUri();
+	   $url=preg_replace('/api\/.*/', '', $url);
+	   $url.='?lfnr='.$comment->getLfnr();
+	   $message = "Ihr Kommentar: \r\n".
+		 "Betreff: ".$comment->getSubject(). "\r\n" .
+		 "Komentar: \r\n".$comment->getDescription(). "\r\n\r\n" .
+		 "Wurde feigegeben! Vielen Dank!\r\n".
+		 "Um den Kommentar anzusehen  Besuchen Sie bitte die Webseite: \r\n" .
+		 $url;
+
+	 $headers = 'From: webmaster@sven.anders.hamburg' . "\r\n" .
+	'Reply-To: adfc2015@sven.anders.hamburg' . "\r\n" .
+	'X-Mailer: PHP/' . phpversion();
+
+	mail($to, $subject, $message, $headers);
+
+
+
 	   $app->halt(200, 'Published');
        } else {
           $app->halt(401, 'Falsches Passwort');
