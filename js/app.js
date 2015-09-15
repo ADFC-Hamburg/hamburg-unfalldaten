@@ -1,3 +1,5 @@
+L.Icon.Default.imagePath = 'bower_components/leaflet/dist/images/';
+
 var basemap = new L.TileLayer(baseUrl, {maxZoom: 17, attribution: baseAttribution, subdomains: subdomains, opacity: opacity});
 
 var center = new L.LatLng(53.5541,10.0193);

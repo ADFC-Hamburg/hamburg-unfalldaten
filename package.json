@@ -1,0 +1,9 @@
+{
+  "name": "adfc-map",
+  "version": "0.0.1",
+  "author": "Sven Anders",
+  "devDependencies": {
+    "grunt-contrib-cssmin": "^0.10.0",
+    "grunt-contrib-uglify": "~0.4.0"
+  }
+}
