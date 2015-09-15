@@ -2,6 +2,14 @@
 module.exports = function(grunt) {
  
     grunt.initConfig({
+	clean: ["fonts", 'css/generated.css', 'js/generated.js'],
+	copy: {
+	    main: {
+		files: [
+		    {expand: true, flatten: true, src: ['bower_components/*/fonts/*'], dest: 'fonts/', filter: 'isFile'},
+		]
+	    },
+	},
         cssmin: {
             css: {
                 files: {
@@ -38,6 +46,8 @@ module.exports = function(grunt) {
  
     grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-contrib-uglify');
- 
-    grunt.task.registerTask('default', ['cssmin', 'uglify']);
+    grunt.loadNpmTasks('grunt-contrib-copy');
+    grunt.loadNpmTasks('grunt-contrib-clean');
+
+    grunt.task.registerTask('default', ['cssmin', 'uglify','copy']);
 }
