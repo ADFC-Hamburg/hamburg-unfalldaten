@@ -2,7 +2,16 @@
 module.exports = function(grunt) {
  
     grunt.initConfig({
-	clean: ["fonts", 'css/generated.css', 'js/generated.js'],
+	clean: ["fonts", 'css/generated.css', 'js/generated.js', 'bower_components'],
+	bower: {
+	    install: {
+		options: {
+		    copy: false,
+		    verbose: true,
+		},
+		//just run 'grunt bower:install' and you'll see files from your Bower packages in lib directory
+	    },
+	},
 	copy: {
 	    main: {
 		files: [
@@ -48,6 +57,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-clean');
+    grunt.loadNpmTasks('grunt-bower-task');
 
-    grunt.task.registerTask('default', ['cssmin', 'uglify','copy']);
+    grunt.task.registerTask('default', ['bower','cssmin', 'uglify','copy']);
 }
