@@ -68,6 +68,9 @@ $app->get('/publish/:id/:pw/:action', function ($id, $pw, $action) {
 	   $app->halt(410, 'Kommentar nicht gefunden');
     }
     if ($action == 'true') {
+       if ($comment->checkPublishPw('')) {
+          $app->halt(409, 'Schon freigegeben');
+       }
        if ($comment->publish($pw)) {
            $entityManager->persist($comment);
            $entityManager->flush();

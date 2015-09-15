@@ -42,7 +42,9 @@
         dataType:'text',
         url: dataUrl,
         error: function(e) {
-            $("#msg").removeClass('alert-warning').addClass('alert-danger').text('API-Fehler: '+e.statusText);
+            console.log(e);
+            $("#msg").removeClass('alert-warning').addClass('alert-danger').text('API-Fehler: '+e.status+' '+e.responseText);
+            $btn.button('reset');
         },
         success: function(csv) {
             $btn.button('reset');
