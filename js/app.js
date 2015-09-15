@@ -444,6 +444,17 @@ function addComment() {
 	$('#newcommentmsg').removeClass().addClass('alert alert-danger').text("Leider gab es beim Speichern einen unvorhergesehen Fehler. Bitte informieren Sie den Admin unter: adfc2015@sven.anders.hamburg").show();
     });
 }
+function convertDate(date) {
+    var pattern = /^(\d\d\d\d)-(\d\d)-(\d\d) .*$/;
+    var matches = pattern.exec(date);
+    if (!matches) {
+        throw new Error("Invalid string: " + date);
+    }
+    var year = matches[1];
+    var month = matches[2];  
+    var day = matches[3];
+    return day+"."+month+"."+year;
+}
 function loadComments( lfnr ) {
     $('#oldcomments').text('Lade Kommentare ...');
     $.ajax ({
@@ -451,20 +462,25 @@ function loadComments( lfnr ) {
 	dataType:'text',
 	url: 'api/comment.php/getAll/'+lfnr,
 	error: function() {
-	    $('#oldcomments').text('Kommentierung zur Zeit deaktiviert');
+	    $('#oldcomments').text('Kommentierung zur Zeit wegen eines Fehlers deaktiviert');
 	},
 	success: function(data) {
 	    // FIXME 
 	    var comments=JSON.parse(data);
 	    var container= $('#oldcomments');
 	    container.html('');
-	    for (var i = 0; i < comments.length; i++) {
-		var comment= comments[i];
-		container.append($('<h4>').text(comment.subject));
-		container.append($('<div>').text(comment.description));
-		container.append($('<div>').text('Von: '+comment.creator+' Datum: '+comment.created.date));
-		container.append($('<hr>'));
-	    };
+	    if (comments.length===0) {
+		container.append($('<div>').addClass('alert alert-success').text('Wir haben leider noch keine Kommentare zur Unfallstelle erhalten. Schreibe den ersten Kommentar!'));
+	    } else {
+		for (var i = 0; i < comments.length; i++) {
+		    var comment= comments[i];
+		    container.append($('<h4>').text(comment.subject));
+		    
+		    container.append($('<div id="comment-from">').text('Von '+comment.creator+' am '+convertDate(comment.created.date)+'.'));
+		    container.append($('<div id="comment-msg">').text(comment.description));
+		    container.append($('<hr>'));
+		};
+	    }
 	}
     })
 };

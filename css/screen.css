@@ -91,3 +91,7 @@ input.search-query {
     width: 294px;
     height: 210px;
 }
+
+div#comment-from {
+    font-size: xx-small;
+}
