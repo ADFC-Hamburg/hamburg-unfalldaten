@@ -1,6 +1,16 @@
+var dataUrl = 'data/RF_2014_Anonym.txt';                                                                                                                                           
+var maxZoom = 18;
+var fieldSeparator = '\t';
+//var baseUrl = 'http://{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png';
+var baseUrl = '//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
+var baseAttribution= 'Karte &copy; <a href="http://openstreetmap.org">OpenStreetMap</a>. ( <a href="http://opendatacommons.org/licenses/odbl/">ODbL</a>)';
+var subdomains = 'abc';
+var clusterOptions = {showCoverageOnHover: false, maxClusterRadius: 50};
+var labelColumn = "Name";
+
 L.Icon.Default.imagePath = 'bower_components/leaflet/dist/images/';
 
-var basemap = new L.TileLayer(baseUrl, {maxZoom: 17, attribution: baseAttribution, subdomains: subdomains, opacity: opacity});
+var basemap = new L.TileLayer(baseUrl, {maxZoom: maxZoom, attribution: baseAttribution, subdomains: subdomains});
 
 var center = new L.LatLng(53.5541,10.0193);
 
@@ -528,7 +538,7 @@ var points = L.geoCsv (null, {
 	    share+='<a href="'+url+' title="Link zu diesem Marker""><i class="fa fa-link"></i></a>';
 	    url=encodeURIComponent(url);
 	    share+='<a href="http://www.facebook.com/sharer.php?u='+url+'&t='+ shareTitle+'" target="_blank" title="Bei Facebook teilen"><i class="fa fa-facebook"></i></a>';
-	    share+='<a href="http://twitter.com/home?status='+sahreTitle+' - '+url+'"  target="_blank" title="Unfallstelle twittern"><i class="fa fa-twitter"></i></a>';
+	    share+='<a href="http://twitter.com/home?status='+shareTitle+' - '+url+'"  target="_blank" title="Unfallstelle twittern"><i class="fa fa-twitter"></i></a>';
 	    share+='<a href="mailto:?subject='+shareTitle+'&body='+url+'" title="Per E-Mail weiterleiten"><i class="fa fa-envelope"></i></a>';
 	    share+='</div>';
 	    table=$('<table class="table table-striped table-bordered table-condensed">');
