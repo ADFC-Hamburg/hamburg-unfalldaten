@@ -112,7 +112,7 @@ var ursKeys = {
     '87':'anders Tier auf der Fahrbahn',
     '88':'sonstiges Hinderniss auf der fahrbahn (ausgen. Pos 43, 44)',
     '89':'Sonstige Ursache mit kurzer Beschreibung',
-}
+};
 var avKeys = {
     '1': 'Moped /Mockis',
     '2': 'Mofa 25',
@@ -152,7 +152,7 @@ var avKeys = {
     '81': 'Fu&szlig;g&auml;nger',
     '82': 'Handwagen / Karre',
     '83': 'Tiere',
-    '83': 'Fu&szlig;g&auml;nger m. Sport o. Spielger&auml;t',
+    '84': 'Fu&szlig;g&auml;nger m. Sport o. Spielger&auml;t',
     '91': 'bespanntes Fuhrwerk',
     '92': 'sonstiges Fahrzeug',
     '93': 'andere Personen',
@@ -395,7 +395,8 @@ function clearErr() {
 	$(this).removeClass('has-error').removeClass('has-feedback');
     });
     $('#newcommentmsg').hide();
-};
+}
+
 function addComment() {
     var data= {
 	id:$("#comment-id").val(),
@@ -405,13 +406,14 @@ function addComment() {
 	subject:$("#comment-subject").val(),
 	comment:$("#comment-comment").val(),
     };
+
     if (data.save) {
 	$.cookie('adfc_username', data.usr);
 	$.cookie('adfc_useremail', data.email);
     } else {
 	$.removeCookie('adfc_username');
 	$.removeCookie('adfc_useremail');
-    };
+    }
 
     $('#comment-send-btn').button("loading");
     clearErr();
@@ -481,11 +483,12 @@ function loadComments( lfnr ) {
 		    container.append($('<div id="comment-from">').text('Von '+comment.creator+' am '+convertDate(comment.created.date)+'.'));
 		    container.append($('<div id="comment-msg">').text(comment.description));
 		    container.append($('<hr>'));
-		};
+		}
 	    }
 	}
-    })
-};
+    });
+}
+
 function openComment( id ) {
     map.closePopup();
     clearErr();
@@ -505,7 +508,7 @@ function openComment( id ) {
     $("#comment-title").text("Kommentare zu Fahrradunfall Nr. "+id+" in 2014");
     $("#comment-id").val(id);
     $("#comments").modal();
-};
+}
 
 var openMarker = 0;
 var points = L.geoCsv (null, {
@@ -515,21 +518,22 @@ var points = L.geoCsv (null, {
 	popup="<div>Loading...</div>";
         layer.bindPopup(popup, popupOpts);
 	layer.on('click', function (e) {
-	    var url=window.location.href.split("?")[0]+'?lfnr='+e.target.feature.properties['lfnr'];
-	    var title='Fahrradunfall+Nr.+'+e.target.feature.properties['lfnr']+'+in+2014';
+	    var lfnr=e.target.feature.properties.lfnr;
+	    var url=window.location.href.split("?")[0]+'?lfnr='+lfnr;
+	    var shareTitle='Fahrradunfall+Nr.+'+lfnr+'+in+2014';
 	    var popupj= $('<div>').addClass('popup-content').append($('<div id="street-view">'));
 	   
 //	    var popup = '<div class="popup-content"><div id="street-view"></div>';
 	    var share='<div class="share">';
 	    share+='<a href="'+url+' title="Link zu diesem Marker""><i class="fa fa-link"></i></a>';
 	    url=encodeURIComponent(url);
-	    share+='<a href="http://www.facebook.com/sharer.php?u='+url+'&t='+ title+'" target="_blank" title="Bei Facebook teilen"><i class="fa fa-facebook"></i></a>';
-	    share+='<a href="http://twitter.com/home?status='+title+' - '+url+'"  target="_blank" title="Unfallstelle twittern"><i class="fa fa-twitter"></i></a>';
-	    share+='<a href="mailto:?subject='+title+'&body='+url+'" title="Per E-Mail weiterleiten"><i class="fa fa-envelope"></i></a>';
+	    share+='<a href="http://www.facebook.com/sharer.php?u='+url+'&t='+ shareTitle+'" target="_blank" title="Bei Facebook teilen"><i class="fa fa-facebook"></i></a>';
+	    share+='<a href="http://twitter.com/home?status='+sahreTitle+' - '+url+'"  target="_blank" title="Unfallstelle twittern"><i class="fa fa-twitter"></i></a>';
+	    share+='<a href="mailto:?subject='+shareTitle+'&body='+url+'" title="Per E-Mail weiterleiten"><i class="fa fa-envelope"></i></a>';
 	    share+='</div>';
 	    table=$('<table class="table table-striped table-bordered table-condensed">');
 	    var td=$('<td>').text('Suche nach Kommentaren...');
-	    var lfnr=e.target.feature.properties['lfnr'];
+
 	    $.ajax ({
 		type:'GET',
 		dataType:'text',
@@ -546,8 +550,8 @@ var points = L.geoCsv (null, {
 			var count=data.published+data.waiting;
 			html=count+' Kommentare (davon  '+data.waiting+' auf Moderation wartend)<br/>';
 		    }
-		    if (data.published+data.waiting==0) {
-			html=html+'<a href="javascript:openComment('+lfnr+');">Schreibe den ersten Kommentar!</a>'
+		    if ((data.published+data.waiting)===0) {
+			html=html+'<a href="javascript:openComment('+lfnr+');">Schreibe den ersten Kommentar!</a>';
 		    } else {
 			html=html+'<button type="button" class="btn btn-info btn-xs" onClick="openComment('+lfnr+');" data-target="#comments">Kommentare</button>';
 		    }
