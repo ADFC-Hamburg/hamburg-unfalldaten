@@ -54,7 +54,6 @@ module.exports = function(grunt) {
 			'bower_components/leaflet-hash/leaflet-hash.js',
 			'bower_components/bootstrap3-typeahead/bootstrap3-typeahead.js',
 			'js/leaflet.geocsv.js',
-			'config.js',
 			'js/app.js'
 		    ]
                 }
