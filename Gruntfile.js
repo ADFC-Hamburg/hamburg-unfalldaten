@@ -54,6 +54,7 @@ module.exports = function(grunt) {
 			'bower_components/leaflet-hash/leaflet-hash.js',
 			'bower_components/bootstrap3-typeahead/bootstrap3-typeahead.js',
 			'js/leaflet.geocsv.js',
+			'js/version.js',
 			'js/app.js'
 		    ]
                 }
@@ -64,9 +65,24 @@ module.exports = function(grunt) {
 		files: ['js/app.js','css/screen.css'],
 		tasks: ['jshint','uglify','copy'],
 	    }
-	}
+	},
+	'git-describe': {
+	    options: {
+		prop: 'meta.revision'
+	    },
+	    me: {}
+	},
     });
  
+
+    grunt.event.once('git-describe', function (rev) {
+	grunt.log.writeln("Git Revision: " + rev);
+	grunt.file.write('js/version.js', 'version='+JSON.stringify({
+	    revision: rev[0],
+	    date: grunt.template.today()
+	}));
+    });
+
     grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-copy');
@@ -74,6 +90,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-bower-task');
     grunt.loadNpmTasks('grunt-contrib-watch');
+    grunt.loadNpmTasks('grunt-git-describe');
 
-    grunt.task.registerTask('default', ['bower','jshint','cssmin', 'uglify','copy']);
+    grunt.task.registerTask('default', ['bower','git-describe','jshint','cssmin', 'uglify','copy']);
 };

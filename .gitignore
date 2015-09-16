@@ -3,6 +3,7 @@ bower_components/
 *~
 css/generated.css
 css/generated.css.map
+js/version.js
 js/generated.js.map
 js/generated.js
 node_modules/

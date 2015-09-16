@@ -3,7 +3,8 @@ var maxZoom = 18;
 var fieldSeparator = '\t';
 //var baseUrl = 'http://{s}.tile.openstreetmap.de/tiles/osmde/{z}/{x}/{y}.png';
 var baseUrl = '//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
-var baseAttribution= 'Karte &copy; <a href="http://openstreetmap.org">OpenStreetMap</a>. ( <a href="http://opendatacommons.org/licenses/odbl/">ODbL</a>)';
+var baseAttribution= 'Karte &copy; <a href="http://openstreetmap.org">OpenStreetMap</a>. ( <a href="http://opendatacommons.org/licenses/odbl/">ODbL</a>)'+"\n"+
+ version.revision+' '+version.date;
 var subdomains = 'abc';
 var clusterOptions = {showCoverageOnHover: false, maxClusterRadius: 50};
 var labelColumn = "Name";
