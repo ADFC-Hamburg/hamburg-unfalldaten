@@ -24,6 +24,9 @@ module.exports = function(grunt) {
 	},
         cssmin: {
             css: {
+		options: {
+		    sourceMap:true,
+		},
                 files: {
                     'css/generated.css':     [
 			'bower_components/leaflet/dist/leaflet.css',
