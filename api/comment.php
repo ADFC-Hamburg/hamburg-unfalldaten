@@ -138,7 +138,7 @@ $app->post('/new', function () {
 	$url.='comment_freigabe.php?id='.$comment->getId().'&pw='.$pw.'&lfnr='.$data->id;
 	$jaurl=$url."&action=true";
 	$neinurl=$url."&action=false";
-	$to      = 'adfc-freigabe@sven.anders.hamburg';
+	$to      = 'adfc-freigabe@sven.anders.hamburg,Jens.deye@gmx.de';
 	$subject = '[ADFC-Map] Neuer Kommentar Nr. '.$comment->getId().' Unfallstelle '. $data->id;
 	$message = "Bitte den Kommentar freigeben: \r\n".
 		 "Von: ".$data->usr." ".$data->email. "\r\n" .
