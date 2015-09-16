@@ -1,6 +1,6 @@
 #!/bin/bash
 git pull
-bower install
+grunt
 cd api
 /home/sven/composer.phar install
 vendor/bin/doctrine orm:schema-tool:update
