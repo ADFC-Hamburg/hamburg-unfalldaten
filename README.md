@@ -11,7 +11,8 @@
 ``` bash
 git clone git@gitlab.com:tabacha-de/adfchh-map.git
 cd adfchh-map/
-bower install
+npm install
+grunt
 cp $PATH_TO_UNFALLDATEN/RF_2014_Anonym.txt data/
 cd api/
 $PATH_TO_COMPOSER/composer.phar install
