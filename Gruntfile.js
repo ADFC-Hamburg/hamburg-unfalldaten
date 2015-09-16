@@ -39,31 +39,10 @@ module.exports = function(grunt) {
                 }
             }
         },
-        uglify: {
-            js: {
-		options: {
-		    sourceMap:true,
-		},
-                files: {
-                    'js/generated.js': [
-			'bower_components/jquery/dist/jquery.js',
-			'bower_components/jquery.cookie/jquery.cookie.js',
-			'bower_components/leaflet/dist/leaflet.js',
-			'bower_components/bootstrap/dist/js/bootstrap.js',
-			'bower_components/leaflet.markercluster/dist/leaflet.markercluster.js',
-			'bower_components/leaflet-hash/leaflet-hash.js',
-			'bower_components/bootstrap3-typeahead/bootstrap3-typeahead.js',
-			'js/leaflet.geocsv.js',
-			'js/version.js',
-			'js/app.js'
-		    ]
-                }
-            }
-        },
 	watch: {
 	    scripts: {
 		files: ['js/app.js','css/screen.css'],
-		tasks: ['jshint','uglify','copy'],
+		tasks: ['jshint','copy'],
 	    }
 	},
 	'git-describe': {
@@ -77,14 +56,13 @@ module.exports = function(grunt) {
 
     grunt.event.once('git-describe', function (rev) {
 	grunt.log.writeln("Git Revision: " + rev);
-	grunt.file.write('js/version.js', 'version='+JSON.stringify({
+	grunt.file.write('js/model/version.js', 'define(\'model/version\', function () { return '+JSON.stringify({
 	    revision: rev[0],
 	    date: grunt.template.today()
-	}));
+	})+';});');
     });
 
     grunt.loadNpmTasks('grunt-contrib-cssmin');
-    grunt.loadNpmTasks('grunt-contrib-uglify');
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-jshint');
@@ -92,5 +70,5 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-git-describe');
 
-    grunt.task.registerTask('default', ['bower','git-describe','jshint','cssmin', 'uglify','copy']);
+    grunt.task.registerTask('default', ['bower','git-describe','jshint','cssmin','copy']);
 };

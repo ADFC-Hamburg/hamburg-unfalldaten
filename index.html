@@ -57,13 +57,17 @@
 	    </div>
 	  </div>
 	  <div class="modal-footer">
-            <button type="button" id="comment-send-btn" class="btn btn-primary" onclick="addComment();">Senden</button>
+            <button type="button" id="comment-send-btn" class="btn btn-primary">Senden</button>
             <button type="button" class="btn btn-default" data-dismiss="modal">schlie&szlig;en</button>
 	  </div>
 	</div>
       </div>
     </div>
-    <script src="https://maps.googleapis.com/maps/api/js?signed_in=true"> </script>
-    <script src="js/generated.js"></script>
+    <script src="bower_components/requirejs/require.js"></script>
+    <script> 
+        requirejs(['./js/common'], function (common) {
+              requirejs(['app/map']);
+            });
+    </script>
 </body>
 </html>
