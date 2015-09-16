@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="de">
   <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -26,8 +26,8 @@
             <button id="close" type="button" class="btn btn-success" onClick="window.close()">Seite schlie&szlig;en</button>
 	</div>
       </div>
+    </div>
 
-</div>
     <script src="bower_components/jquery/dist/jquery.min.js" ></script>
     <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
     <script> 
