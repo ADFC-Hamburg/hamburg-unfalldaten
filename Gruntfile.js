@@ -58,7 +58,13 @@ module.exports = function(grunt) {
 		    ]
                 }
             }
-        }
+        },
+	watch: {
+	    scripts: {
+		files: ['js/app.js','css/screen.css'],
+		tasks: ['jshint','uglify','copy'],
+	    }
+	}
     });
  
     grunt.loadNpmTasks('grunt-contrib-cssmin');
@@ -67,6 +73,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-clean');
     grunt.loadNpmTasks('grunt-contrib-jshint');
     grunt.loadNpmTasks('grunt-bower-task');
+    grunt.loadNpmTasks('grunt-contrib-watch');
 
     grunt.task.registerTask('default', ['bower','jshint','cssmin', 'uglify','copy']);
 };
