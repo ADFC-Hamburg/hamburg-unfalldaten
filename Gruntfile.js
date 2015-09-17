@@ -2,7 +2,7 @@
 module.exports = function(grunt) {
  
     grunt.initConfig({
-	clean: ["fonts", 'css/generated.css', 'js/generated.js', 'bower_components'],
+	clean: ["fonts", 'css/generated.css', 'js/generated.js', 'bower_components', 'dist'],
 	bower: {
 	    install: {
 		options: {
@@ -16,11 +16,30 @@ module.exports = function(grunt) {
 	    all: ['Gruntfile.js', 'js/**.js', 'js/*/**.js', 'config.js','!js/leaflet.geocsv-src.js','!js/leaflet.geocsv.js' ]
 	},
 	copy: {
-	    main: {
+	    fonts: {
 		files: [
 		    {expand: true, flatten: true, src: ['bower_components/*/fonts/*'], dest: 'fonts/', filter: 'isFile'},
 		]
 	    },
+	    images: {
+		files: [
+		    {expand: true, flatten: true, src: ['./bower_components/leaflet/dist/images/*'], dest: 'images/', filter: 'isFile'},
+		]
+	    },
+	    dist: {
+		files: [
+		    {expand: true, flatten: false, src: ['index.html',
+							 'comment_freigabe.php',
+							 'api/**',
+							 'css/generated.css*',
+							 'bower_components/requirejs/require.js',
+							 'fonts/*',
+							 'data/*',
+							 'bower_components/leaflet/dist/images/*'
+							], dest: 'dist/', filter: 'isFile'},
+		]
+	    },
+
 	},
         cssmin: {
             css: {
@@ -52,7 +71,7 @@ module.exports = function(grunt) {
 		options: {
 		    baseUrl: 'js',
 		    mainConfigFile: 'js/common.js',
-		    out: 'dist/js/app/map.js',
+		    out: 'dist/app/map.js',
 		    name: 'app/map',
 		    exclude: ['jquery','bootstrap'],
 		}
