@@ -10,7 +10,7 @@ define('app/map',['model/unfalldaten-legende',
 		  'leaflethash',
 		  'async!https://maps.googleapis.com/maps/api/js?signed_in=true'],function (popupOpt,$,jqc,version,L,bootstrap) {
 
-		      "use strict";
+
 var dataUrl = 'data/RF_2014_Anonym.txt';                                                                                                                                           
 var maxZoom = 18;
 var fieldSeparator = '\t';
