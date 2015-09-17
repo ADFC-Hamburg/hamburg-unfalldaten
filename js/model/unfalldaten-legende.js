@@ -1,5 +1,6 @@
 define('model/unfalldaten-legende',[],function () {
 
+    "use strict";
 var charKeys =   {
     '0': 'keine',
     '1': 'Kreuzung',

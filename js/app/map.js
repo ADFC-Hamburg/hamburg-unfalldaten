@@ -10,7 +10,7 @@ define('app/map',['model/unfalldaten-legende',
 		  'leaflethash',
 		  'async!https://maps.googleapis.com/maps/api/js?signed_in=true'],function (popupOpt,$,jqc,version,L,bootstrap) {
 
-
+		      "use strict";
 var dataUrl = 'data/RF_2014_Anonym.txt';                                                                                                                                           
 var maxZoom = 18;
 var fieldSeparator = '\t';
@@ -208,11 +208,11 @@ var points = L.geoCsv (null, {
 			td.text(count+' Kommentare (davon  '+data.waiting+' auf Moderation wartend)').append($('<br>'));
 		    }
 		    if ((data.published+data.waiting)===0) {
-			td.append($('<a>').text('Schreibe den ersten Kommentar!').on('click',function () {openComment(lfnr)}));
+			td.append($('<a>').text('Schreibe den ersten Kommentar!').on('click',function () {openComment(lfnr);}));
 		    } else {
 			td.append($('<button type="button" class="btn btn-info btn-xs" data-target="#comments">')
 				  .text('Kommentare')
-				  .on('click',function () {openComment(lfnr)}));
+				  .on('click',function () {openComment(lfnr);}));
 		    }
 		}
 	    });
@@ -364,7 +364,7 @@ var addCsvMarkers = function() {
 
 var typeAheadSource = [];
 
-function ArrayToSet(a) {
+function arrayToSet(a) {
     var temp = {};
     for (var i = 0; i < a.length; i++)
         temp[a[i]] = true;
@@ -413,7 +413,7 @@ $(document).ready( function() {
         success: function(csv) {
             dataCsv = csv;
             populateTypeAhead(csv, fieldSeparator);
-            typeAheadSource = ArrayToSet(typeAheadSource);
+            typeAheadSource = arrayToSet(typeAheadSource);
             $('#filter-string').typeahead({source: typeAheadSource});
             addCsvMarkers();
         }

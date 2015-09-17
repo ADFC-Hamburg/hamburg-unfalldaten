@@ -13,7 +13,7 @@ module.exports = function(grunt) {
 	    },
 	},
 	jshint: {
-	    all: ['Gruntfile.js', 'js/app.js', 'config.js']
+	    all: ['Gruntfile.js', 'js/**.js', 'js/*/**.js', 'config.js','!js/leaflet.geocsv-src.js','!js/leaflet.geocsv.js' ]
 	},
 	copy: {
 	    main: {
@@ -39,6 +39,25 @@ module.exports = function(grunt) {
                 }
             }
         },
+	requirejs: {
+	    common: {
+		options: {
+		    baseUrl: 'js',
+		    mainConfigFile: 'js/common.js',
+		    out: 'dist/js/common.js',
+		    include: ['jquery','bootstrap'],
+		}
+	    },
+	    map: {
+		options: {
+		    baseUrl: 'js',
+		    mainConfigFile: 'js/common.js',
+		    out: 'dist/js/app/map.js',
+		    name: 'app/map',
+		    exclude: ['jquery','bootstrap'],
+		}
+	    }
+	},
 	watch: {
 	    scripts: {
 		files: ['js/app.js','css/screen.css'],
@@ -52,7 +71,7 @@ module.exports = function(grunt) {
 	    me: {}
 	},
     });
- 
+
 
     grunt.event.once('git-describe', function (rev) {
 	grunt.log.writeln("Git Revision: " + rev);
@@ -69,6 +88,7 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-bower-task');
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-git-describe');
+    grunt.loadNpmTasks('grunt-contrib-requirejs');
 
-    grunt.task.registerTask('default', ['bower','git-describe','jshint','cssmin','copy']);
+    grunt.task.registerTask('default', ['bower','git-describe','jshint','requirejs','cssmin','copy']);
 };
