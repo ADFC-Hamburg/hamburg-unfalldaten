@@ -22,35 +22,16 @@
 	<div id="success">
 	  <div>
             <h1>Kommentar-Freigabe</h1>
-            <p id="msg" class="alert alert-warning">Die Daten werden gespeichert.</p>
+            <p id="msg" class="alert alert-warning">Bitte warten, Seite wird geladen. Wenn diese Meldung l&auml;nger hier steht, ist es ein Javascript Fehler.</p>
             <button id="close" type="button" class="btn btn-success" onClick="window.close()">Seite schlie&szlig;en</button>
 	</div>
       </div>
     </div>
-
-    <script src="bower_components/jquery/dist/jquery.min.js" ></script>
-    <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+    <script src="bower_components/requirejs/require.js"></script>
     <script> 
-      var $btn=$("#close")
-      $btn.button('loading');
-      var param=location.search.replace(/.id=(\d*)&pw=(\w*)&lfnr=\d*&action=(\w*)/,'$1/$2/$3');
-      console.log(param);
-      
-      var dataUrl='api/comment.php/publish/'+param;
-      $.ajax ({
-        type:'GET',
-        dataType:'text',
-        url: dataUrl,
-        error: function(e) {
-            console.log(e);
-            $("#msg").removeClass('alert-warning').addClass('alert-danger').text('API-Fehler: '+e.status+' '+e.responseText);
-            $btn.button('reset');
-        },
-        success: function(csv) {
-            $btn.button('reset');
-            $("#msg").removeClass('alert-warning').addClass('alert-success').text('Vielen Dank, Ihre Entscheidung wurde gespeichert.');
-        }
-    });
-  </script>
+        requirejs(['./js/common'], function (common) {
+              requirejs(['app/comment_freigabe']);
+            });
+    </script>
 </body>
 </html>
