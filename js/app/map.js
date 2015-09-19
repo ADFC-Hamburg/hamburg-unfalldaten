@@ -1,14 +1,14 @@
 define('app/map',['model/unfalldaten-legende',
 		  'jquery',
-		  'jquerycookie',
 		  'model/version',
 		  'leaflet',
 		  'bootstrap',
+		  '../bower_components/js-cookie/src/js.cookie.js',
 		  'bootstraptypehead',
 		  'leafletmarker',
 		  'leafletgeocsv',
 		  'leaflethash',
-		  'async!https://maps.googleapis.com/maps/api/js?signed_in=true'],function (popupOpt,$,jqc,version,L,bootstrap) {
+		  'async!https://maps.googleapis.com/maps/api/js?signed_in=true'],function (popupOpt,$,version,L,bootstrap,Cookies) {
 
 
 var dataUrl = 'data/RF_2014_Anonym.txt';                                                                                                                                           
@@ -64,11 +64,11 @@ function addComment() {
     };
 
     if (data.save) {
-	$.cookie('adfc_username', data.usr);
-	$.cookie('adfc_useremail', data.email);
+	Cookies.set('adfc_username', data.usr,  { expires: 365 });
+	Cookies.set('adfc_useremail', data.email,  { expires: 365 });
     } else {
-	$.removeCookie('adfc_username');
-	$.removeCookie('adfc_useremail');
+	Cookies.remove('adfc_username');
+	Cookies.remove('adfc_useremail');
     }
 
     $('#comment-send-btn').button("loading");
@@ -157,9 +157,9 @@ function openComment( id ) {
     $('#comment-usr').val('');
     $('#comment-email').val('');
     $('#comment-comment').val('');
-    if ($.cookie('adfc_username')) {
-	$('#comment-usr').val($.cookie('adfc_username'));
-	$('#comment-email').val($.cookie('adfc_useremail'));
+    if (Cookies.get('adfc_username')) {
+	$('#comment-usr').val(Cookies.get('adfc_username'));
+	$('#comment-email').val(Cookies.get('adfc_useremail'));
 	$("#comment-save").prop( "checked",true);
     }
     $("#comment-title").text("Kommentare zu Fahrradunfall Nr. "+id+" in 2014");
