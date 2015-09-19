@@ -2,7 +2,7 @@ requirejs.config({
     baseUrl: 'js',
     paths: {
 	jquery: '../bower_components/jquery/dist/jquery',
-        jquerycookie: '../bower_components/jquery.cookie/jquery.cookie',
+        'js.cookie': '../bower_components/js-cookie/src/js.cookie',
 //        leaflet: 'js/lib/leaflet-generated',
         bootstrap: '../bower_components/bootstrap/dist/js/bootstrap',
         bootstraptypehead: '../bower_components/bootstrap3-typeahead/bootstrap3-typeahead',
