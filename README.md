@@ -24,7 +24,7 @@ $PATH_TO_COMPOSER/composer.phar install
 cd api
 vendor/bin/doctrine orm:schema-tool:create
 ```
-* Configure Apache to use the adfchh-map as a base directory
+* Configure Apache to use the adfchh-map/dist as a base directory
 
 ### Update
 ``` bash
