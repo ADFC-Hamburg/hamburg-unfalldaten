@@ -50,39 +50,45 @@ form {
 #clear {
     display: inline-block;
     position: relative;
-    right: -24px;
     z-index: 999999;
     top: 3px;
+    right: -12px;
     font-size:14pt;
     text-decoration: none;
     color: #aaa;
 }
 
-input.search-query {
-    padding-left: 24px;
+.search-what {
+    margin-left: 9px;
 }
-
 .search-box {
+    display: inline-block;
+    vertical-align:middle;
+    margin-bottom: 0;
+    border-radius: 14px;
+    background-color: #ddd ;
     font-size: 10pt !important;
-    padding-top: 3px !important;
-    padding-bottom: 3px !important;
 }
 .input-append .add-on,.input-append .btn,.input-append .btn-group{
     margin-left:-4px;
 }
-.input-append .btn {
-  border-radius: 0 14px 14px 0;
+.search-box .btn {
+    border-radius: 0 14px 14px 0;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    padding-left: 2px;
+    padding-right: 4px;
+}
+.search-op {
+    display: none;
+}
+.search-value {
+    display: none;
 }
 .input-append {
-    display: inline-block;
-    vertical-align:middle;
-    margin-bottom: 0;
 }
+
 .search-query {
-    border-top-left-radius: 14px;
-    border-top-right-radius: 0px;
-    border-bottom-right-radius: 0px;
-    border-bottom-left-radius: 14px;
 }
 .leaflet-tile-container img {
  webkit-backface-visibility: hidden;
