@@ -10,20 +10,17 @@
 
     <div id="map"></div>
     <div id="filter-container">
-        <form class="form-search" class="noSelect" onSubmit="addCsvMarkers(); return false;">
+        <form class="form-search" class="noSelect">
           <div class="search-box">
             <a href="#" id="clear" class="leaflet-popup-close-button">&#215;</a>
-            <select name="search-id" class="search-what" size="1">
+            <select name="search-id" id="search-id" class="search-what" size="1">
               <option>Enth&auml;lt</option>
             </select>
-            <select name="search-op" class="search-op" size="1">
+            <select name="search-op" id="search-op" class="search-op" size="1">
               <option>=</option>
-              <option>!=</option>
-              <option>&lt;</option>
-              <option>&gt;</option>
-              <option>enth&auml;lt</option>
+              <option>&ne;</option>
               </select>
-            <select name="search-value" class="search-value" size="1">
+            <select name="search-value" id="search-value" class="search-value" size="1">
               <option>Wert</option>
             </select>
             <input type="text" id="filter-string" class="input-medium search-query" autocomplete="off">

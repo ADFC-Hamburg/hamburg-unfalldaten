@@ -4,11 +4,18 @@ define('app/map',['model/unfalldaten-legende',
 		  'view/comment',
 		  'leaflet',
 		  'bootstrap',
+                  'model/searchbox',
 		  'bootstraptypehead',
 		  'leafletmarker',
 		  'leafletgeocsv',
 		  'leaflethash',
 		  'async!https://maps.googleapis.com/maps/api/js?signed_in=true'],function (popupOpt,$,version,comment, L,bootstrap) {
+
+if(typeof(String.prototype.strip) === "undefined") {
+    String.prototype.strip = function() {
+        return String(this).replace(/^\s+|\s+$/g, '');
+    };
+}
 
 var dataUrl = 'data/RF_2014_Anonym.txt';                                                                                                                                           
 var maxZoom = 18;
@@ -48,7 +55,7 @@ var points = L.geoCsv (null, {
     fieldSeparator: fieldSeparator,
     onEachFeature: function (feature, layer) {
 	popup="<div>Loading...</div>";
-        layer.bindPopup(popup, popupOpt);
+        layer.bindPopup(popup, popupOpts);
 	layer.on('click', function (e) {
 	    var lfnr=e.target.feature.properties.lfnr;
 	    var url=window.location.href.split("?")[0]+'?lfnr='+lfnr;
@@ -190,6 +197,7 @@ if (typeof queryJSON.lfnr !== 'undefined') {
 }
 
 
+
 var addCsvMarkers = function() {
     hits = 0;
     total = 0;
@@ -223,6 +231,11 @@ var addCsvMarkers = function() {
     return false;
 };
 
+$('.form-search').submit(function() {
+    addCsvMarkers(); 
+    return false;
+});
+
 var typeAheadSource = [];
 
 function arrayToSet(a) {
@@ -253,11 +266,6 @@ function populateTypeAhead(csv, delimiter) {
     }
 }
 
-if(typeof(String.prototype.strip) === "undefined") {
-    String.prototype.strip = function() {
-        return String(this).replace(/^\s+|\s+$/g, '');
-    };
-}
 
 map.addLayer(markers);
 
