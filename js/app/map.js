@@ -150,44 +150,35 @@ var points = L.geoCsv (null, {
     },
     filter: function(feature, layer) {
         total += 1;
-        if (!filterString) {
-            hits += 1;
-            return true;
-        }
-        var hit = false;
-        var lowerFilterString = filterString.toLowerCase().strip();
-	if (lowerFilterString.indexOf(':') !== -1) {
-	    var lfkey=lowerFilterString.split(':')[0];
-	    var lfvalue=lowerFilterString.split(':')[1];
-            $.each(feature.properties, function(k, v) {
-		var key=k.toLowerCase().strip();
-		if (key === lfkey) {
-		    var value= v.toLowerCase().strip();
-		    if (value === lfvalue) {
-			hit = true;
-			hits += 1;
-			return true;
-		    }
-		}
-	    });
-	    
-	} else {
+        if (filterKey === '') {
+            if (!lowerFilterString) {
+                hits += 1;
+                return true;
+            }
             $.each(feature.properties, function(k, v) {
 		var value = v.toLowerCase();
 		if (value.indexOf(lowerFilterString) !== -1) {
-                    hit = true;
                     hits += 1;
                     return true;
 		}
             });
-	}
-        return hit;
+        } else {
+            var value=feature.properties[filterKey].toLowerCase().strip();
+            if (value === lowerFilterVal) {
+		hits += 1;
+		return true;
+	    }
+	    
+        }
+        return false;
     }
 });
 
 var hits = 0;
 var total = 0;
-var filterString;
+var lowerFilterString;
+var filterKey;
+var lowerFilterVal;
 var markers = new L.MarkerClusterGroup();
 var dataCsv;
 var lfnr;
@@ -201,40 +192,57 @@ if (typeof queryJSON.lfnr !== 'undefined') {
 var addCsvMarkers = function() {
     hits = 0;
     total = 0;
-    filterString = document.getElementById('filter-string').value;
-
-    if (filterString) {
-        $("#clear").fadeIn();
-    } else {
-        $("#clear").fadeOut();
-    }
-
-    map.removeLayer(markers);
-    points.clearLayers();
-
-    markers = new L.MarkerClusterGroup(clusterOptions);
-    points.addData(dataCsv);
-    markers.addLayer(points);
-
-    map.addLayer(markers);
-
-    if (openMarker !== 0) {
-
-	markers.zoomToShowLayer(openMarker, function () {
-	    openMarker.fire('click');
-	    openMarker=0;
-	});
-    }
-    if (total > 0) {
-        $('#search-results').html("Showing " + hits + " of " + total);
-    }
+    $('#search-id option:selected').each(function(){
+        var key=this.id;
+        var filterString = document.getElementById('filter-string').value;
+        if (key === '*') {
+            lowerFilterString = filterString.toLowerCase().strip();
+            filterKey='';
+            if (filterString) {
+                $("#clear").fadeIn();
+            } else {
+                $("#clear").fadeOut();
+            }
+        }  else if (popupOpt[key].keys === undefined) {
+            filterKey=key.toLowerCase();
+            lowerFilterVal= filterString.toLowerCase().strip();
+            if (filterString) {
+                $("#clear").fadeIn();
+            } else {
+                $("#clear").fadeOut();
+            }
+        } else {
+            filterKey=key.toLowerCase();
+            $('#search-value option:selected').each(function(){
+                var val=this.id;
+                lowerFilterVal= val.toLowerCase().strip();
+                $("#clear").fadeIn();
+            });
+        }
+        map.removeLayer(markers);
+        points.clearLayers();
+        markers = new L.MarkerClusterGroup(clusterOptions);
+        points.addData(dataCsv);
+        markers.addLayer(points);
+        
+        map.addLayer(markers);
+        
+        if (openMarker !== 0) {
+            
+	    markers.zoomToShowLayer(openMarker, function () {
+	        openMarker.fire('click');
+	        openMarker=0;
+	    });
+        }
+        if (total > 0) {
+            $('#search-results').html("Zeige " + hits + " von " + total + '.');
+        }
+    });
     return false;
 };
 
-$('.form-search').submit(function() {
-    addCsvMarkers(); 
-    return false;
-});
+$('.form-search').submit(addCsvMarkers);
+
 
 var typeAheadSource = [];
 

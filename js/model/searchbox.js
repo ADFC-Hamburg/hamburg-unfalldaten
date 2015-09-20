@@ -18,7 +18,6 @@ define('model/searchbox',[
            }
            ele.change( function () {
                $('#search-id option:selected').each(function(){
-                   debugger;
                    var key=this.id;
                    if (key === '*') {
                        $('#search-op').fadeOut();
@@ -35,8 +34,8 @@ define('model/searchbox',[
                        var valbox=$('#search-value').html('');
                        for (var value in legende[key].keys) {
                            valbox.append($('<option>',{id:value}).html(legende[key].keys[value]));
-                       };
-                   };
+                       }
+                   }
                });
            });
        });

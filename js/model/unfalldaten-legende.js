@@ -299,12 +299,12 @@ var popupOpt = {
 	keys: ursKeys,
     },
     Urs02: {
-	title: 'weitere Ursache',
+	title: 'weitere Ursache 1',
 	descr: 'weitere Unfallursache des Hauptunfallverursachers',
 	keys: ursKeys,
     },
     Urs03: {
-	title: 'weitere Ursache',
+	title: 'weitere Ursache 2',
 	descr: 'weitere Unfallursache des Hauptunfallverursachers',
 	keys: ursKeys,
     },
