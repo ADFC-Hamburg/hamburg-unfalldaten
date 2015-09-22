@@ -210,8 +210,8 @@ define('app/map', ['model/map',
 
        $(document).ready( function() {
            $.ajax ({
-               type:'GET',
-               dataType:'text',
+               type: 'GET',
+               dataType: 'text',
                url: dataUrl,
                contentType: 'text/csv; charset=utf-8',
                error: function() {

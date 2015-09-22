@@ -16,7 +16,7 @@ module.exports = function(grunt) {
             all: ['Gruntfile.js', 'js/**.js', 'js/*/**.js', 'config.js', '!js/leaflet.geocsv-src.js', '!js/leaflet.geocsv.js' ]
         },
         eslint: {
-            target: ['Gruntfile.js', 'js/**.js', 'js/*/**.js', 'config.js', '!js/leaflet.geocsv-src.js', '!js/leaflet.geocsv.js' ]
+            target: ['Gruntfile.js', 'js/**.js', 'js/*/**.js', 'config.js', '!js/leaflet.geocsv-src.js', '!js/leaflet.geocsv.js', '!js/model/version.js' ]
         },
         copy: {
             fonts: {
@@ -47,10 +47,10 @@ module.exports = function(grunt) {
         cssmin: {
             css: {
                 options: {
-                    sourceMap:true,
+                    sourceMap: true,
                 },
                 files: {
-                    'css/generated.css':     [
+                    'css/generated.css': [
                         'bower_components/leaflet/dist/leaflet.css',
                         'bower_components/bootstrap/dist/css/bootstrap.css',
                         'bower_components/leaflet.markercluster/dist/MarkerCluster.css',
@@ -97,10 +97,11 @@ module.exports = function(grunt) {
 
     grunt.event.once('git-describe', function (rev) {
         grunt.log.writeln('Git Revision: ' + rev);
-        var out='define(\'model/version\', function () { return '+JSON.stringify({
-            revision: rev[0],
-            date: grunt.template.today()
-        })+';});';
+        var out = 'define(\'model/version\', function () { return '+
+            JSON.stringify({
+                revision: rev[0],
+                date: grunt.template.today()
+            })+';});';
         grunt.file.write('js/model/version.js', out.replace(/\"/g, '\'').replace(/,/g, ', '));
     });
 

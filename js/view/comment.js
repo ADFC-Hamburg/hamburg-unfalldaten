@@ -19,12 +19,12 @@ define('view/comment', [
 
     function addComment() {
         var data= {
-            id:$('#comment-id').val(),
-            usr:$('#comment-usr').val(),
-            email:$('#comment-email').val(),
-            save:$('#comment-save').is(':checked'),
-            subject:$('#comment-subject').val(),
-            comment:$('#comment-comment').val(),
+            id: $('#comment-id').val(),
+            usr: $('#comment-usr').val(),
+            email: $('#comment-email').val(),
+            save: $('#comment-save').is(':checked'),
+            subject: $('#comment-subject').val(),
+            comment: $('#comment-comment').val(),
         };
 
         if (data.save) {
@@ -92,8 +92,8 @@ define('view/comment', [
     function loadComments( lfnr ) {
         $('#oldcomments').text('Lade Kommentare ...');
         $.ajax ({
-            type:'GET',
-            dataType:'text',
+            type: 'GET',
+            dataType: 'text',
             url: 'api/comment.php/getAll/'+lfnr,
             error: function() {
                 $('#oldcomments').text('Kommentierung zur Zeit wegen eines Fehlers deaktiviert');

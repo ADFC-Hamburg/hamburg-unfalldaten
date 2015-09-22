@@ -36,8 +36,8 @@ define('view/unfalldaten-popup', [
         var td=$('<td>').text('Suche nach Kommentaren...');
 
         $.ajax ({
-            type:'GET',
-            dataType:'text',
+            type: 'GET',
+            dataType: 'text',
             url: 'api/comment.php/count/'+lfnr,
             error: function() {
                 td.text('Kommentierung zur Zeit deaktiviert');
@@ -110,6 +110,6 @@ define('view/unfalldaten-popup', [
     }
 
     return {
-        'click':click,
+        'click': click,
     };
 });

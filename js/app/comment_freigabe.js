@@ -11,8 +11,8 @@ define('app/comment_freigabe', [
       
     var dataUrl='api/comment.php/publish/'+param;
     $.ajax ({
-        type:'GET',
-        dataType:'text',
+        type: 'GET',
+        dataType: 'text',
         url: dataUrl,
         error: function() {
             $('#msg').removeClass('alert-warning').addClass('alert-danger').text('API-Fehler: '+e.status+' '+e.responseText);

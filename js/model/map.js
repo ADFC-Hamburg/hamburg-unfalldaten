@@ -34,7 +34,7 @@ define('model/map', ['jquery',
 
         return {
             'createMap': createMap,
-            'popupOpts':popupOpts,
+            'popupOpts': popupOpts,
             'LGeoCsv': L.geoCsv,
             'newMarker': newMarker,
         };
