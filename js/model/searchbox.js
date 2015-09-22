@@ -11,8 +11,8 @@ define('model/searchbox', [
                var ignore=false,
                    title=legende[key].title;
                if (legende[key].ignore !== undefined) {
-		   ignore = legende[key].ignore;
-	       }
+                   ignore = legende[key].ignore;
+               }
                if (!ignore) {
                    if (legende[key].searchGroup !== undefined) {
                        var searchGrp=legende[key].searchGroup;

@@ -1,242 +1,242 @@
 define('app/map', ['model/map',
                   'model/unfalldaten-legende',
                   'view/unfalldaten-popup',
-		  'jquery',
-		  'model/version',
-		  'view/comment',
-		  'bootstrap',
+    'jquery',
+    'model/version',
+    'view/comment',
+    'bootstrap',
                   'model/searchbox',
-		  'bootstraptypehead',
-		 ], function (model, legende, ufPopup, $, version, comment, bootstrap, searchbox) {
+    'bootstraptypehead',
+   ], function (model, legende, ufPopup, $, version, comment, bootstrap, searchbox) {
 
-                      'use strict';
-if(typeof(String.prototype.strip) === 'undefined') {
-    String.prototype.strip = function() {
-        return String(this).replace(/^\s+|\s+$/g, '');
-    };
-}
+       'use strict';
+       if(typeof(String.prototype.strip) === 'undefined') {
+           String.prototype.strip = function() {
+               return String(this).replace(/^\s+|\s+$/g, '');
+           };
+       }
 
-                     var dataUrl = 'data/RF_2014_Anonym.txt',
-                     fieldSeparator = '\t',
-                     map=model.createMap(),
-                     query = window.location.search.substring(1), 
-                     queryPairs = query.split('&'), 
-                     queryJSON = {},
-                     hits = 0,
-                     total = 0,
-                     lowerFilterString,
-                     filterKey,
-                     filterOp,
-                     lowerFilterVal,
-                     markers = model.newMarker(),
-                     dataCsv,
-                     lfnr;
+       var dataUrl = 'data/RF_2014_Anonym.txt',
+           fieldSeparator = '\t',
+           map=model.createMap(),
+           query = window.location.search.substring(1), 
+           queryPairs = query.split('&'), 
+           queryJSON = {},
+           hits = 0,
+           total = 0,
+           lowerFilterString,
+           filterKey,
+           filterOp,
+           lowerFilterVal,
+           markers = model.newMarker(),
+           dataCsv,
+           lfnr;
 
                      
-$.each(queryPairs, function() { queryJSON[this.split('=')[0]] = this.split('=')[1]; });
+       $.each(queryPairs, function() { queryJSON[this.split('=')[0]] = this.split('=')[1]; });
 
-function openComment(lfnr) {
-    map.closePopup();
-    comment.open(lfnr);
-}
+       function openComment(lfnr) {
+           map.closePopup();
+           comment.open(lfnr);
+       }
 
-var openMarker = 0;
-var points = model.LGeoCsv (null, {
-    firstLineTitles: true,
-    fieldSeparator: fieldSeparator,
-    onEachFeature: function (feature, layer) {
-	var popup='<div>Loading...</div>';
-        layer.bindPopup(popup, model.popupOpts);
-	layer.on('click', function (e) {
-            ufPopup.click(e, openComment);
-        });
-	if ( feature.properties.lfnr == lfnr) {
-	    // hier den Marker merken und dann spaeter oeffnen
-	    openMarker = layer;
-	    layer.openPopup(); 
-	}
-    },
-    filter: function(feature) {
-        total += 1;
-        if (filterKey === '') {
-            if (!lowerFilterString) {
-                hits += 1;
-                return true;
-            }
-            $.each(feature.properties, function(k, v) {
-		var value = v.toLowerCase();
-		if (value.indexOf(lowerFilterString) !== -1) {
-                    hits += 1;
-                    return true;
-		}
-            });
-        } else {
-            var fKeys;
-            if (Array.isArray(filterKey)) {
-                fKeys=filterKey;
-            } else {
-                fKeys=[filterKey];
-            }
-            var found=false;
-            for (var i = 0; i <fKeys.length; i++) {
-                var key=fKeys[i];
-                var value=feature.properties[key].toLowerCase().strip();
-                if (value === lowerFilterVal) {
-                    found=true;
-                    break;
-                }
-            }
-            if (filterOp === 'ne') {
-                found=!found;
-            }
-            if (found) {
-	        hits += 1;
-		return true;
-            }
-        }
-        return false;
-    }
-});
+       var openMarker = 0;
+       var points = model.LGeoCsv (null, {
+           firstLineTitles: true,
+           fieldSeparator: fieldSeparator,
+           onEachFeature: function (feature, layer) {
+               var popup='<div>Loading...</div>';
+               layer.bindPopup(popup, model.popupOpts);
+               layer.on('click', function (e) {
+                   ufPopup.click(e, openComment);
+               });
+               if ( feature.properties.lfnr == lfnr) {
+     // hier den Marker merken und dann spaeter oeffnen
+                   openMarker = layer;
+                   layer.openPopup(); 
+               }
+           },
+           filter: function(feature) {
+               total += 1;
+               if (filterKey === '') {
+                   if (!lowerFilterString) {
+                       hits += 1;
+                       return true;
+                   }
+                   $.each(feature.properties, function(k, v) {
+                       var value = v.toLowerCase();
+                       if (value.indexOf(lowerFilterString) !== -1) {
+                           hits += 1;
+                           return true;
+                       }
+                   });
+               } else {
+                   var fKeys;
+                   if (Array.isArray(filterKey)) {
+                       fKeys=filterKey;
+                   } else {
+                       fKeys=[filterKey];
+                   }
+                   var found=false;
+                   for (var i = 0; i <fKeys.length; i++) {
+                       var key=fKeys[i];
+                       var value=feature.properties[key].toLowerCase().strip();
+                       if (value === lowerFilterVal) {
+                           found=true;
+                           break;
+                       }
+                   }
+                   if (filterOp === 'ne') {
+                       found=!found;
+                   }
+                   if (found) {
+                       hits += 1;
+                       return true;
+                   }
+               }
+               return false;
+           }
+       });
 
-if (typeof queryJSON.lfnr !== 'undefined') {
-    lfnr=queryJSON.lfnr;
-    console.log('lfnr', queryJSON.lfnr);
-}
+       if (typeof queryJSON.lfnr !== 'undefined') {
+           lfnr=queryJSON.lfnr;
+           console.log('lfnr', queryJSON.lfnr);
+       }
 
 
 
-var addCsvMarkers = function() {
-    hits = 0;
-    total = 0;
-    $('#search-id option:selected').each(function(){
-        var key=this.id;
-        var filterString = document.getElementById('filter-string').value;
-        if (key === '*') {
-            lowerFilterString = filterString.toLowerCase().strip();
-            filterKey='';
-            filterOp='eq';
-            if (filterString) {
-                $('#clear').fadeIn();
-            } else {
-                $('#clear').fadeOut();
-            }
-        } else if (searchbox.searchGroups[key] !== undefined) {
-            filterKey = [];
-            for (var i = 0; i < searchbox.searchGroups[key].length; i++) {
-                filterKey.push(searchbox.searchGroups[key][i].toLowerCase());
-            }
-            filterOp=$('#search-op option:selected').prop('id');
-            $('#search-value option:selected').each(function(){
-                var val=this.id;
-                lowerFilterVal= val.toLowerCase().strip();
-                $('#clear').fadeIn();
-            });
-        }  else if (legende[key].keys === undefined) {
-            filterKey=key.toLowerCase();
-            filterOp=$('#search-op option:selected').prop('id');
-            lowerFilterVal= filterString.toLowerCase().strip();
-            if (filterString) {
-                $('#clear').fadeIn();
-            } else {
-                $('#clear').fadeOut();
-            }
-        } else {
-            filterKey=key.toLowerCase();
-            filterOp=$('#search-op option:selected').prop('id');
-            $('#search-value option:selected').each(function(){
-                var val=this.id;
-                lowerFilterVal= val.toLowerCase().strip();
-                $('#clear').fadeIn();
-            });
-        }
-        map.removeLayer(markers);
-        points.clearLayers();
-        markers = model.newMarker();
-        points.addData(dataCsv);
-        markers.addLayer(points);
+       var addCsvMarkers = function() {
+           hits = 0;
+           total = 0;
+           $('#search-id option:selected').each(function(){
+               var key=this.id;
+               var filterString = document.getElementById('filter-string').value;
+               if (key === '*') {
+                   lowerFilterString = filterString.toLowerCase().strip();
+                   filterKey='';
+                   filterOp='eq';
+                   if (filterString) {
+                       $('#clear').fadeIn();
+                   } else {
+                       $('#clear').fadeOut();
+                   }
+               } else if (searchbox.searchGroups[key] !== undefined) {
+                   filterKey = [];
+                   for (var i = 0; i < searchbox.searchGroups[key].length; i++) {
+                       filterKey.push(searchbox.searchGroups[key][i].toLowerCase());
+                   }
+                   filterOp=$('#search-op option:selected').prop('id');
+                   $('#search-value option:selected').each(function(){
+                       var val=this.id;
+                       lowerFilterVal= val.toLowerCase().strip();
+                       $('#clear').fadeIn();
+                   });
+               }  else if (legende[key].keys === undefined) {
+                   filterKey=key.toLowerCase();
+                   filterOp=$('#search-op option:selected').prop('id');
+                   lowerFilterVal= filterString.toLowerCase().strip();
+                   if (filterString) {
+                       $('#clear').fadeIn();
+                   } else {
+                       $('#clear').fadeOut();
+                   }
+               } else {
+                   filterKey=key.toLowerCase();
+                   filterOp=$('#search-op option:selected').prop('id');
+                   $('#search-value option:selected').each(function(){
+                       var val=this.id;
+                       lowerFilterVal= val.toLowerCase().strip();
+                       $('#clear').fadeIn();
+                   });
+               }
+               map.removeLayer(markers);
+               points.clearLayers();
+               markers = model.newMarker();
+               points.addData(dataCsv);
+               markers.addLayer(points);
         
-        map.addLayer(markers);
+               map.addLayer(markers);
         
-        if (openMarker !== 0) {
+               if (openMarker !== 0) {
             
-	    markers.zoomToShowLayer(openMarker, function () {
-	        openMarker.fire('click');
-	        openMarker=0;
-	    });
-        }
-        if (total > 0) {
-            $('#search-results').html('Zeige ' + hits + ' von ' + total + '.');
-        }
-    });
-    return false;
-};
+                   markers.zoomToShowLayer(openMarker, function () {
+                       openMarker.fire('click');
+                       openMarker=0;
+                   });
+               }
+               if (total > 0) {
+                   $('#search-results').html('Zeige ' + hits + ' von ' + total + '.');
+               }
+           });
+           return false;
+       };
 
-$('.form-search').submit(addCsvMarkers);
-
-
-var typeAheadSource = [];
-
-function arrayToSet(a) {
-    var temp = {};
-    for (var i = 0; i < a.length; i++)
-        temp[a[i]] = true;
-    var r = [];
-    for (var k in temp)
-        r.push(k);
-    return r;
-}
-
-function populateTypeAhead(csv, delimiter) {
-    var lines = csv.split('\n');
-    for (var i = lines.length - 1; i >= 1; i--) {
-        var items = lines[i].split(delimiter);
-        for (var j = items.length - 1; j >= 0; j--) {
-            var item = items[j].strip();
-            item = item.replace(/"/g, '');
-            if (item.indexOf('http') !== 0 && isNaN(parseFloat(item))) {
-                typeAheadSource.push(item);
-                var words = item.split(/\W+/);
-                for (var k = words.length - 1; k >= 0; k--) {
-                    typeAheadSource.push(words[k]);
-                }
-            }
-        }
-    }
-}
+       $('.form-search').submit(addCsvMarkers);
 
 
-map.addLayer(markers);
+       var typeAheadSource = [];
+
+       function arrayToSet(a) {
+           var temp = {};
+           for (var i = 0; i < a.length; i++)
+               temp[a[i]] = true;
+           var r = [];
+           for (var k in temp)
+               r.push(k);
+           return r;
+       }
+
+       function populateTypeAhead(csv, delimiter) {
+           var lines = csv.split('\n');
+           for (var i = lines.length - 1; i >= 1; i--) {
+               var items = lines[i].split(delimiter);
+               for (var j = items.length - 1; j >= 0; j--) {
+                   var item = items[j].strip();
+                   item = item.replace(/"/g, '');
+                   if (item.indexOf('http') !== 0 && isNaN(parseFloat(item))) {
+                       typeAheadSource.push(item);
+                       var words = item.split(/\W+/);
+                       for (var k = words.length - 1; k >= 0; k--) {
+                           typeAheadSource.push(words[k]);
+                       }
+                   }
+               }
+           }
+       }
 
 
-$(document).ready( function() {
-    $.ajax ({
-        type:'GET',
-        dataType:'text',
-        url: dataUrl,
-        contentType: 'text/csv; charset=utf-8',
-        error: function() {
-            alert('Error retrieving csv file');
-        },
-        success: function(csv) {
-            dataCsv = csv;
-            populateTypeAhead(csv, fieldSeparator);
-            typeAheadSource = arrayToSet(typeAheadSource);
-            $('#filter-string').typeahead({source: typeAheadSource});
-            addCsvMarkers();
-        }
-    });
-
-    $('#clear').click(function(evt){
-        evt.preventDefault();
-        $('#search-id option[id=\'*\']').prop('selected', true);
-        $('#filter-string').val('').focus();
-        $('#search-op').fadeOut();
-        $('#search-value').fadeOut();
-        $('#filter-string').fadeIn();
-        addCsvMarkers();
-    });
-
-});
+       map.addLayer(markers);
 
 
-});
+       $(document).ready( function() {
+           $.ajax ({
+               type:'GET',
+               dataType:'text',
+               url: dataUrl,
+               contentType: 'text/csv; charset=utf-8',
+               error: function() {
+                   alert('Error retrieving csv file');
+               },
+               success: function(csv) {
+                   dataCsv = csv;
+                   populateTypeAhead(csv, fieldSeparator);
+                   typeAheadSource = arrayToSet(typeAheadSource);
+                   $('#filter-string').typeahead({source: typeAheadSource});
+                   addCsvMarkers();
+               }
+           });
+
+           $('#clear').click(function(evt){
+               evt.preventDefault();
+               $('#search-id option[id=\'*\']').prop('selected', true);
+               $('#filter-string').val('').focus();
+               $('#search-op').fadeOut();
+               $('#search-value').fadeOut();
+               $('#filter-string').fadeIn();
+               addCsvMarkers();
+           });
+
+       });
+
+
+   });
