@@ -153,7 +153,7 @@ var fahrzeugKeys = {
     'PKW': 'PKW',
     'RF' : 'Radfahrer', 
     'SOF': 'Sonderfahrzeug',
-}
+};
 var popupOpt = {
     Kl: {
 	title: 'Straßenklasse',
