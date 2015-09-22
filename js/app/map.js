@@ -1,47 +1,38 @@
-define('app/map',['model/unfalldaten-legende',
+define('app/map', ['model/map',
+                  'model/unfalldaten-legende',
                   'view/unfalldaten-popup',
 		  'jquery',
 		  'model/version',
 		  'view/comment',
-		  'leaflet',
 		  'bootstrap',
                   'model/searchbox',
 		  'bootstraptypehead',
-		  'leafletmarker',
-		  'leafletgeocsv',
-		  'leaflethash'],function (legende, ufPopup, $,version,comment, L,bootstrap, searchbox) {
+		 ], function (model, legende, ufPopup, $, version, comment, bootstrap, searchbox) {
 
-if(typeof(String.prototype.strip) === "undefined") {
+                      'use strict';
+if(typeof(String.prototype.strip) === 'undefined') {
     String.prototype.strip = function() {
         return String(this).replace(/^\s+|\s+$/g, '');
     };
 }
 
-var dataUrl = 'data/RF_2014_Anonym.txt';                                                                                                                                           
-var maxZoom = 18;
-var fieldSeparator = '\t';
+                     var dataUrl = 'data/RF_2014_Anonym.txt',
+                     fieldSeparator = '\t',
+                     map=model.createMap(),
+                     query = window.location.search.substring(1), 
+                     queryPairs = query.split('&'), 
+                     queryJSON = {},
+                     hits = 0,
+                     total = 0,
+                     lowerFilterString,
+                     filterKey,
+                     filterOp,
+                     lowerFilterVal,
+                     markers = model.newMarker(),
+                     dataCsv,
+                     lfnr;
 
-var baseUrl = '//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png';
-var baseAttribution= 'Karte &copy; <a href="http://openstreetmap.org">OpenStreetMap</a>. ( <a href="http://opendatacommons.org/licenses/odbl/">ODbL</a>)'+"\n"+
-			  version.revision+' '+version.date;
-var subdomains = 'abc';
-var clusterOptions = {showCoverageOnHover: false, maxClusterRadius: 50};
-var labelColumn = "Name";
-
-L.Icon.Default.imagePath = 'bower_components/leaflet/dist/images/';
-
-var basemap = new L.TileLayer(baseUrl, {maxZoom: maxZoom, attribution: baseAttribution, subdomains: subdomains});
-
-var center = new L.LatLng(53.5541,10.0193);
-
-var map = new L.Map('map', {center: center, zoom: 10, maxZoom: maxZoom, layers: [basemap]});
-var hash = new L.Hash(map);
-var popupOpts = {
-    autoPanPadding: new L.Point(5, 50),
-    autoPan: true,
-    maxWidth: 310,
-};
-var query = window.location.search.substring(1), queryPairs = query.split('&'), queryJSON = {};
+                     
 $.each(queryPairs, function() { queryJSON[this.split('=')[0]] = this.split('=')[1]; });
 
 function openComment(lfnr) {
@@ -50,12 +41,12 @@ function openComment(lfnr) {
 }
 
 var openMarker = 0;
-var points = L.geoCsv (null, {
+var points = model.LGeoCsv (null, {
     firstLineTitles: true,
     fieldSeparator: fieldSeparator,
     onEachFeature: function (feature, layer) {
-	popup="<div>Loading...</div>";
-        layer.bindPopup(popup, popupOpts);
+	var popup='<div>Loading...</div>';
+        layer.bindPopup(popup, model.popupOpts);
 	layer.on('click', function (e) {
             ufPopup.click(e, openComment);
         });
@@ -65,7 +56,7 @@ var points = L.geoCsv (null, {
 	    layer.openPopup(); 
 	}
     },
-    filter: function(feature, layer) {
+    filter: function(feature) {
         total += 1;
         if (filterKey === '') {
             if (!lowerFilterString) {
@@ -107,18 +98,9 @@ var points = L.geoCsv (null, {
     }
 });
 
-var hits = 0;
-var total = 0;
-var lowerFilterString;
-var filterKey;
-var filterOp;
-var lowerFilterVal;
-var markers = new L.MarkerClusterGroup();
-var dataCsv;
-var lfnr;
 if (typeof queryJSON.lfnr !== 'undefined') {
     lfnr=queryJSON.lfnr;
-    console.log('lfnr',queryJSON.lfnr);
+    console.log('lfnr', queryJSON.lfnr);
 }
 
 
@@ -134,9 +116,9 @@ var addCsvMarkers = function() {
             filterKey='';
             filterOp='eq';
             if (filterString) {
-                $("#clear").fadeIn();
+                $('#clear').fadeIn();
             } else {
-                $("#clear").fadeOut();
+                $('#clear').fadeOut();
             }
         } else if (searchbox.searchGroups[key] !== undefined) {
             filterKey = [];
@@ -147,16 +129,16 @@ var addCsvMarkers = function() {
             $('#search-value option:selected').each(function(){
                 var val=this.id;
                 lowerFilterVal= val.toLowerCase().strip();
-                $("#clear").fadeIn();
+                $('#clear').fadeIn();
             });
         }  else if (legende[key].keys === undefined) {
             filterKey=key.toLowerCase();
             filterOp=$('#search-op option:selected').prop('id');
             lowerFilterVal= filterString.toLowerCase().strip();
             if (filterString) {
-                $("#clear").fadeIn();
+                $('#clear').fadeIn();
             } else {
-                $("#clear").fadeOut();
+                $('#clear').fadeOut();
             }
         } else {
             filterKey=key.toLowerCase();
@@ -164,12 +146,12 @@ var addCsvMarkers = function() {
             $('#search-value option:selected').each(function(){
                 var val=this.id;
                 lowerFilterVal= val.toLowerCase().strip();
-                $("#clear").fadeIn();
+                $('#clear').fadeIn();
             });
         }
         map.removeLayer(markers);
         points.clearLayers();
-        markers = new L.MarkerClusterGroup(clusterOptions);
+        markers = model.newMarker();
         points.addData(dataCsv);
         markers.addLayer(points);
         
@@ -183,7 +165,7 @@ var addCsvMarkers = function() {
 	    });
         }
         if (total > 0) {
-            $('#search-results').html("Zeige " + hits + " von " + total + '.');
+            $('#search-results').html('Zeige ' + hits + ' von ' + total + '.');
         }
     });
     return false;
@@ -205,13 +187,13 @@ function arrayToSet(a) {
 }
 
 function populateTypeAhead(csv, delimiter) {
-    var lines = csv.split("\n");
+    var lines = csv.split('\n');
     for (var i = lines.length - 1; i >= 1; i--) {
         var items = lines[i].split(delimiter);
         for (var j = items.length - 1; j >= 0; j--) {
             var item = items[j].strip();
-            item = item.replace(/"/g,'');
-            if (item.indexOf("http") !== 0 && isNaN(parseFloat(item))) {
+            item = item.replace(/"/g, '');
+            if (item.indexOf('http') !== 0 && isNaN(parseFloat(item))) {
                 typeAheadSource.push(item);
                 var words = item.split(/\W+/);
                 for (var k = words.length - 1; k >= 0; k--) {
@@ -231,7 +213,7 @@ $(document).ready( function() {
         type:'GET',
         dataType:'text',
         url: dataUrl,
-        contentType: "text/csv; charset=utf-8",
+        contentType: 'text/csv; charset=utf-8',
         error: function() {
             alert('Error retrieving csv file');
         },
@@ -244,13 +226,13 @@ $(document).ready( function() {
         }
     });
 
-    $("#clear").click(function(evt){
+    $('#clear').click(function(evt){
         evt.preventDefault();
-        $("#search-id option[id='*']").prop('selected', true);
-        $("#filter-string").val("").focus();
+        $('#search-id option[id=\'*\']').prop('selected', true);
+        $('#filter-string').val('').focus();
         $('#search-op').fadeOut();
         $('#search-value').fadeOut();
-        $("#filter-string").fadeIn();
+        $('#filter-string').fadeIn();
         addCsvMarkers();
     });
 

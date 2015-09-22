@@ -1,4 +1,4 @@
-define('model/unfalldaten-legende',[],function () {
+define('model/unfalldaten-legende', [], function () {
 
     'use strict';
 
@@ -147,7 +147,7 @@ var avKeys = {
 };
 var fahrzeugKeys = {
     'BUS' : 'Bus',
-    'FG' : 'Fußgänger' ,
+    'FG' : 'Fußgänger',
     'KRD': 'Motorrad',
     'LKW': 'LKW',
     'PKW': 'PKW',

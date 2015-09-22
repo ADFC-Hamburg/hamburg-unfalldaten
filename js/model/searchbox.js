@@ -1,11 +1,11 @@
-define('model/searchbox',[
+define('model/searchbox', [
     'model/unfalldaten-legende',
     'jquery',
 ],
        function (legende, $) {
            var ele=$('#search-id');
            ele.html('');
-           ele.append($('<option>',{id:'*'}).text('Alles'));
+           ele.append($('<option>', {id:'*'}).text('Alles'));
            var searchGroups={};
            for (var key in legende) {
                var ignore=false,
@@ -17,12 +17,12 @@ define('model/searchbox',[
                    if (legende[key].searchGroup !== undefined) {
                        var searchGrp=legende[key].searchGroup;
                        if (searchGroups[searchGrp] === undefined) {
-                           ele.append($('<option>',{id:searchGrp}).text(searchGrp));
+                           ele.append($('<option>', {id:searchGrp}).text(searchGrp));
                            searchGroups[searchGrp]= [ ];
                        }
                        searchGroups[searchGrp].push(key);
                    } else {
-                       ele.append($('<option>',{id:key}).text(title));
+                       ele.append($('<option>', {id:key}).text(title));
                    }
                }
            }
@@ -48,7 +48,7 @@ define('model/searchbox',[
                            $('#filter-string').fadeOut();
                            var valbox=$('#search-value').html('');
                            for (var value in legende[sKey].keys) {
-                               valbox.append($('<option>',{id:value}).text(legende[sKey].keys[value]));
+                               valbox.append($('<option>', {id:value}).text(legende[sKey].keys[value]));
                            }
                        }
                    }

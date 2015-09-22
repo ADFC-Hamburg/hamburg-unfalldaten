@@ -2,7 +2,7 @@
 module.exports = function(grunt) {
  
     grunt.initConfig({
-	clean: ["fonts", 'css/generated.css', 'js/generated.js', 'bower_components', 'dist'],
+	clean: ['fonts', 'css/generated.css', 'js/generated.js', 'bower_components', 'dist'],
 	bower: {
 	    install: {
 		options: {
@@ -13,8 +13,11 @@ module.exports = function(grunt) {
 	    },
 	},
 	jshint: {
-	    all: ['Gruntfile.js', 'js/**.js', 'js/*/**.js', 'config.js','!js/leaflet.geocsv-src.js','!js/leaflet.geocsv.js' ]
+	    all: ['Gruntfile.js', 'js/**.js', 'js/*/**.js', 'config.js', '!js/leaflet.geocsv-src.js', '!js/leaflet.geocsv.js' ]
 	},
+        eslint: {
+            target: ['Gruntfile.js', 'js/**.js', 'js/*/**.js', 'config.js', '!js/leaflet.geocsv-src.js', '!js/leaflet.geocsv.js' ]
+        },
 	copy: {
 	    fonts: {
 		files: [
@@ -64,7 +67,7 @@ module.exports = function(grunt) {
 		    baseUrl: 'js',
 		    mainConfigFile: 'js/common.js',
 		    out: 'dist/js/common.js',
-		    include: ['jquery','bootstrap'],
+		    include: ['jquery', 'bootstrap'],
 		}
 	    },
 	    map: {
@@ -73,14 +76,14 @@ module.exports = function(grunt) {
 		    mainConfigFile: 'js/common.js',
 		    out: 'dist/app/map.js',
 		    name: 'app/map',
-		    exclude: ['jquery','bootstrap'],
+		    exclude: ['jquery', 'bootstrap'],
 		}
 	    }
 	},
 	watch: {
 	    scripts: {
-		files: ['js/app.js','css/screen.css'],
-		tasks: ['jshint','copy'],
+                files: ['Gruntfile.js', 'js/**.js', 'js/*/**.js', 'config.js', '!js/leaflet.geocsv-src.js', '!js/leaflet.geocsv.js' ],
+		tasks: ['eslint', 'jshint', 'copy', 'requirejs'],
 	    }
 	},
 	'git-describe': {
@@ -93,13 +96,15 @@ module.exports = function(grunt) {
 
 
     grunt.event.once('git-describe', function (rev) {
-	grunt.log.writeln("Git Revision: " + rev);
-	grunt.file.write('js/model/version.js', 'define(\'model/version\', function () { return '+JSON.stringify({
+	grunt.log.writeln('Git Revision: ' + rev);
+        var out='define(\'model/version\', function () { return '+JSON.stringify({
 	    revision: rev[0],
 	    date: grunt.template.today()
-	})+';});');
+	})+';});';
+	grunt.file.write('js/model/version.js', out.replace(/\"/g, '\'').replace(/,/g, ', '));
     });
 
+    grunt.loadNpmTasks('grunt-eslint');
     grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-clean');
@@ -109,5 +114,5 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-git-describe');
     grunt.loadNpmTasks('grunt-contrib-requirejs');
 
-    grunt.task.registerTask('default', ['bower','git-describe','jshint','requirejs','cssmin','copy']);
+    grunt.task.registerTask('default', ['bower', 'git-describe', 'eslint', 'jshint', 'requirejs', 'cssmin', 'copy']);
 };
