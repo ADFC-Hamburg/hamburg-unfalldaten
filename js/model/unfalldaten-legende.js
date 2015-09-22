@@ -169,6 +169,19 @@ var popupOpt = {
 	title: 'Staßennummer',
 	descr: 'Nr. bei BAB oder Bundesstraße'
     },
+    LfNr: {
+        title: 'Unfall Nr.',
+    },
+    Datum: {
+        title: 'Datum',
+    },
+    Zeit: {
+        title: 'Zeit',
+    },
+    Fahrtrichtung: {
+        title: 'Fahrtrichtung',
+    },
+
     Zif: {
 	title: 'Ortsteilnummer'
     },
