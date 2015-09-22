@@ -64,7 +64,7 @@ var points = L.geoCsv (null, {
 	   
 //	    var popup = '<div class="popup-content"><div id="street-view"></div>';
 	    var share='<div class="share">';
-	    share+='<a href="'+url+' title="Link zu diesem Marker""><i class="fa fa-link"></i></a>';
+	    share+='<a href="'+url+'" title="Link zu diesem Marker"><i class="fa fa-link"></i></a>';
 	    url=encodeURIComponent(url);
 	    share+='<a href="http://www.facebook.com/sharer.php?u='+url+'&t='+ shareTitle+'" target="_blank" title="Bei Facebook teilen"><i class="fa fa-facebook"></i></a>';
 	    share+='<a href="http://twitter.com/home?status='+shareTitle+' - '+url+'"  target="_blank" title="Unfallstelle twittern"><i class="fa fa-twitter"></i></a>';
