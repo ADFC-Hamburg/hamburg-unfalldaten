@@ -55,7 +55,8 @@ form {
     right: -12px;
     font-size:14pt;
     text-decoration: none;
-    color: #aaa;
+    color: black;
+    font-weight: 700;
 }
 
 .search-what {

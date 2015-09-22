@@ -9,7 +9,7 @@ define('app/map',['model/unfalldaten-legende',
 		  'leafletmarker',
 		  'leafletgeocsv',
 		  'leaflethash',
-		  'async!https://maps.googleapis.com/maps/api/js?signed_in=true'],function (popupOpt,$,version,comment, L,bootstrap) {
+		  'async!https://maps.googleapis.com/maps/api/js?signed_in=true'],function (popupOpt,$,version,comment, L,bootstrap, searchbox) {
 
 if(typeof(String.prototype.strip) === "undefined") {
     String.prototype.strip = function() {
@@ -163,12 +163,28 @@ var points = L.geoCsv (null, {
 		}
             });
         } else {
-            var value=feature.properties[filterKey].toLowerCase().strip();
-            if (value === lowerFilterVal) {
-		hits += 1;
+            var fKeys;
+            if (Array.isArray(filterKey)) {
+                fKeys=filterKey;
+            } else {
+                fKeys=[filterKey];
+            }
+            var found=false;
+            for (var i = 0; i <fKeys.length; i++) {
+                var key=fKeys[i];
+                var value=feature.properties[key].toLowerCase().strip();
+                if (value === lowerFilterVal) {
+                    found=true;
+                    break;
+                }
+            }
+            if (filterOp === 'ne') {
+                found=!found;
+            }
+            if (found) {
+	        hits += 1;
 		return true;
-	    }
-	    
+            }
         }
         return false;
     }
@@ -178,6 +194,7 @@ var hits = 0;
 var total = 0;
 var lowerFilterString;
 var filterKey;
+var filterOp;
 var lowerFilterVal;
 var markers = new L.MarkerClusterGroup();
 var dataCsv;
@@ -198,13 +215,26 @@ var addCsvMarkers = function() {
         if (key === '*') {
             lowerFilterString = filterString.toLowerCase().strip();
             filterKey='';
+            filterOp='eq';
             if (filterString) {
                 $("#clear").fadeIn();
             } else {
                 $("#clear").fadeOut();
             }
+        } else if (searchbox.searchGroups[key] !== undefined) {
+            filterKey = [];
+            for (var i = 0; i < searchbox.searchGroups[key].length; i++) {
+                filterKey.push(searchbox.searchGroups[key][i].toLowerCase());
+            }
+            filterOp=$('#search-op option:selected').prop('id');
+            $('#search-value option:selected').each(function(){
+                var val=this.id;
+                lowerFilterVal= val.toLowerCase().strip();
+                $("#clear").fadeIn();
+            });
         }  else if (popupOpt[key].keys === undefined) {
             filterKey=key.toLowerCase();
+            filterOp=$('#search-op option:selected').prop('id');
             lowerFilterVal= filterString.toLowerCase().strip();
             if (filterString) {
                 $("#clear").fadeIn();
@@ -213,6 +243,7 @@ var addCsvMarkers = function() {
             }
         } else {
             filterKey=key.toLowerCase();
+            filterOp=$('#search-op option:selected').prop('id');
             $('#search-value option:selected').each(function(){
                 var val=this.id;
                 lowerFilterVal= val.toLowerCase().strip();
@@ -298,7 +329,11 @@ $(document).ready( function() {
 
     $("#clear").click(function(evt){
         evt.preventDefault();
+        $("#search-id option[id='*']").prop('selected', true);
         $("#filter-string").val("").focus();
+        $('#search-op').fadeOut();
+        $('#search-value').fadeOut();
+        $("#filter-string").fadeIn();
         addCsvMarkers();
     });
 

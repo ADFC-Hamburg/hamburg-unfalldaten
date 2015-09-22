@@ -145,6 +145,15 @@ var avKeys = {
     '92': 'sonstiges Fahrzeug',
     '93': 'andere Personen',
 };
+var fahrzeugKeys = {
+    'BUS' : 'Bus',
+    'FG' : 'Fußgänger' ,
+    'KRD': 'Motorrad',
+    'LKW': 'LKW',
+    'PKW': 'PKW',
+    'RF' : 'Radfahrer', 
+    'SOF': 'Sonderfahrzeug',
+}
 var popupOpt = {
     Kl: {
 	title: 'Straßenklasse',
@@ -207,31 +216,37 @@ var popupOpt = {
     Char1: {
 	title: 'Charakteristik 1',
 	descr: 'Charakteristik Unfallstelle 1',
+        searchGroup: 'Charakteristik',
 	keys: charKeys
     },
     Char2: {
 	title: 'Charakteristik 2',
 	descr: 'Charakteristik Unfallstelle 2',
+        searchGroup: 'Charakteristik',
 	keys: charKeys
     },
 	
     Char3: {
 	title: 'Charakteristik 3',
 	descr: 'Charakteristik Unfallstelle 3',
+        searchGroup: 'Charakteristik',
 	keys: charKeys
     },
     Beso1: {
 	title: 'Besonderheiten 1',
+        searchGroup: 'Besonderheiten',
 	descr: 'Besonderheiten Unfallstelle 1',
 	keys: besoKeys
     },
     Beso2: {
 	title: 'Besonderheiten 2',
+        searchGroup: 'Besonderheiten',
 	descr: 'Besonderheiten Unfallstelle 2',
 	keys: besoKeys
     },
     Beso3: {
 	title: 'Besonderheiten 3',
+        searchGroup: 'Besonderheiten',
 	descr: 'Besonderheiten Unfallstelle 3',
 	keys: besoKeys
     },
@@ -300,11 +315,13 @@ var popupOpt = {
     },
     Urs02: {
 	title: 'weitere Ursache 1',
+        searchGroup: 'weitere Ursachen',
 	descr: 'weitere Unfallursache des Hauptunfallverursachers',
 	keys: ursKeys,
     },
     Urs03: {
 	title: 'weitere Ursache 2',
+        searchGroup: 'weitere Ursachen',
 	descr: 'weitere Unfallursache des Hauptunfallverursachers',
 	keys: ursKeys,
     },
@@ -343,9 +360,11 @@ var popupOpt = {
     },
     Bet_01: {
 	title: 'Hauptunfallverursacher',
+        keys: fahrzeugKeys,
     },
     Bet_02: {
 	title: 'nächster Beteiligter',
+        keys: fahrzeugKeys,
     },
     Unf_Typ: {
 	descr: 'siehe Typ',
