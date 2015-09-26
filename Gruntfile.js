@@ -2,104 +2,110 @@
 module.exports = function(grunt) {
  
     grunt.initConfig({
-	clean: ["fonts", 'css/generated.css', 'js/generated.js', 'bower_components', 'dist'],
-	bower: {
-	    install: {
-		options: {
-		    copy: false,
-		    verbose: true,
-		},
-		//just run 'grunt bower:install' and you'll see files from your Bower packages in lib directory
-	    },
-	},
-	jshint: {
-	    all: ['Gruntfile.js', 'js/**.js', 'js/*/**.js', 'config.js','!js/leaflet.geocsv-src.js','!js/leaflet.geocsv.js' ]
-	},
-	copy: {
-	    fonts: {
-		files: [
-		    {expand: true, flatten: true, src: ['bower_components/*/fonts/*'], dest: 'fonts/', filter: 'isFile'},
-		]
-	    },
-	    images: {
-		files: [
-		    {expand: true, flatten: true, src: ['./bower_components/leaflet/dist/images/*'], dest: 'images/', filter: 'isFile'},
-		]
-	    },
-	    dist: {
-		files: [
-		    {expand: true, flatten: false, src: ['index.html',
-							 'comment_freigabe.php',
-							 'api/**',
-							 'css/generated.css*',
-							 'bower_components/requirejs/require.js',
-							 'fonts/*',
-							 'data/*',
-							 'bower_components/leaflet/dist/images/*'
-							], dest: 'dist/', filter: 'isFile'},
-		]
-	    },
+        clean: ['fonts', 'css/generated.css', 'js/generated.js', 'bower_components', 'dist'],
+        bower: {
+            install: {
+                options: {
+                    copy: false,
+                    verbose: true,
+                },
+  //just run 'grunt bower:install' and you'll see files from your Bower packages in lib directory
+            },
+        },
+        jshint: {
+            all: ['Gruntfile.js', 'js/**.js', 'js/*/**.js', 'config.js', '!js/leaflet.geocsv-src.js', '!js/leaflet.geocsv.js' ]
+        },
+        eslint: {
+            target: ['Gruntfile.js', 'js/**.js', 'js/*/**.js', 'config.js', '!js/leaflet.geocsv-src.js', '!js/leaflet.geocsv.js', '!js/model/version.js' ]
+        },
+        copy: {
+            fonts: {
+                files: [
+      {expand: true, flatten: true, src: ['bower_components/*/fonts/*'], dest: 'fonts/', filter: 'isFile'},
+                ]
+            },
+            images: {
+                files: [
+      {expand: true, flatten: true, src: ['./bower_components/leaflet/dist/images/*'], dest: 'images/', filter: 'isFile'},
+                ]
+            },
+            dist: {
+                files: [
+      {expand: true, flatten: false, src: ['index.html',
+        'comment_freigabe.php',
+        'api/**',
+        'css/generated.css*',
+        'bower_components/requirejs/require.js',
+        'fonts/*',
+        'data/*',
+        'bower_components/leaflet/dist/images/*'
+       ], dest: 'dist/', filter: 'isFile'},
+                ]
+            },
 
-	},
+        },
         cssmin: {
             css: {
-		options: {
-		    sourceMap:true,
-		},
+                options: {
+                    sourceMap: true,
+                },
                 files: {
-                    'css/generated.css':     [
-			'bower_components/leaflet/dist/leaflet.css',
-			'bower_components/bootstrap/dist/css/bootstrap.css',
-			'bower_components/leaflet.markercluster/dist/MarkerCluster.css',
-			'bower_components/leaflet.markercluster/dist/MarkerCluster.Default.css',
-			'bower_components/font-awesome/css/font-awesome.css',
-			'css/screen.css'
-		    ]
+                    'css/generated.css': [
+                        'bower_components/leaflet/dist/leaflet.css',
+                        'bower_components/bootstrap/dist/css/bootstrap.css',
+                        'bower_components/leaflet.markercluster/dist/MarkerCluster.css',
+                        'bower_components/leaflet.markercluster/dist/MarkerCluster.Default.css',
+                        'bower_components/font-awesome/css/font-awesome.css',
+                        'css/screen.css'
+                    ]
                 }
             }
         },
-	requirejs: {
-	    common: {
-		options: {
-		    baseUrl: 'js',
-		    mainConfigFile: 'js/common.js',
-		    out: 'dist/js/common.js',
-		    include: ['jquery','bootstrap'],
-		}
-	    },
-	    map: {
-		options: {
-		    baseUrl: 'js',
-		    mainConfigFile: 'js/common.js',
-		    out: 'dist/app/map.js',
-		    name: 'app/map',
-		    exclude: ['jquery','bootstrap'],
-		}
-	    }
-	},
-	watch: {
-	    scripts: {
-		files: ['js/app.js','css/screen.css'],
-		tasks: ['jshint','copy'],
-	    }
-	},
-	'git-describe': {
-	    options: {
-		prop: 'meta.revision'
-	    },
-	    me: {}
-	},
+        requirejs: {
+            common: {
+                options: {
+                    baseUrl: 'js',
+                    mainConfigFile: 'js/common.js',
+                    out: 'dist/js/common.js',
+                    include: ['jquery', 'bootstrap'],
+                }
+            },
+            map: {
+                options: {
+                    baseUrl: 'js',
+                    mainConfigFile: 'js/common.js',
+                    out: 'dist/app/map.js',
+                    name: 'app/map',
+                    exclude: ['jquery', 'bootstrap'],
+                }
+            }
+        },
+        watch: {
+            scripts: {
+                files: ['Gruntfile.js', 'js/**.js', 'js/*/**.js', 'config.js', '!js/leaflet.geocsv-src.js', '!js/leaflet.geocsv.js' ],
+                tasks: ['eslint', 'jshint', 'copy', 'requirejs'],
+            }
+        },
+        'git-describe': {
+            options: {
+                prop: 'meta.revision'
+            },
+            me: {}
+        },
     });
 
 
     grunt.event.once('git-describe', function (rev) {
-	grunt.log.writeln("Git Revision: " + rev);
-	grunt.file.write('js/model/version.js', 'define(\'model/version\', function () { return '+JSON.stringify({
-	    revision: rev[0],
-	    date: grunt.template.today()
-	})+';});');
+        grunt.log.writeln('Git Revision: ' + rev);
+        var out = 'define(\'model/version\', function () { return '+
+            JSON.stringify({
+                revision: rev[0],
+                date: grunt.template.today()
+            })+';});';
+        grunt.file.write('js/model/version.js', out.replace(/\"/g, '\'').replace(/,/g, ', '));
     });
 
+    grunt.loadNpmTasks('grunt-eslint');
     grunt.loadNpmTasks('grunt-contrib-cssmin');
     grunt.loadNpmTasks('grunt-contrib-copy');
     grunt.loadNpmTasks('grunt-contrib-clean');
@@ -109,5 +115,5 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-git-describe');
     grunt.loadNpmTasks('grunt-contrib-requirejs');
 
-    grunt.task.registerTask('default', ['bower','git-describe','jshint','requirejs','cssmin','copy']);
+    grunt.task.registerTask('default', ['bower', 'git-describe', 'eslint', 'jshint', 'requirejs', 'cssmin', 'copy']);
 };
