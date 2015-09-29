@@ -56,6 +56,21 @@ define('app/map', ['model/map',
                    layer.openPopup(); 
                }
            },
+           pointToLayer: function(feature /*, latlng*/) {
+//               debugger;
+               var t=legende.Typ.icons[feature.properties.typ];
+               var c=legende.Kat.color[feature.properties.kat];
+               console.log(c);
+               return new L.Marker(new L.LatLng(feature.geometry.coordinates[1], feature.geometry.coordinates[0]), {
+                   icon: L.divIcon({
+                       className: 'mmap-marker green '+c,
+//                       iconSize:L.point(20, 30),
+                       iconAnchor: [14, 30],
+                       iconSize: [26, 26],
+                       html: '<div class="icon fa '+t+'" /><div class="arrow" />'
+                   })
+               });
+           },
            filter: function(feature) {
                total += 1;
                if (filterKey === '') {
