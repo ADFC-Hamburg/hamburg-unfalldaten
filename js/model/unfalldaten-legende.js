@@ -307,6 +307,14 @@ define('model/unfalldaten-legende', [], function () {
                 '4': 'Unfall mit schw. Sachschaden',     
                 '5': 'sonstiger Sachschadensunfall',
                 '6': 'Unfall unter Einfluss von berauschenden Mitel'
+            },
+            color: {
+                '1': 'red',
+                '2': 'orange',
+                '3': 'yellow',
+                '4': 'LightCyan',     
+                '5': 'silver',
+                '6': 'blue'
             }
         },
         Typ: {
@@ -319,6 +327,15 @@ define('model/unfalldaten-legende', [], function () {
                 '5': 'ruhenden Verkehr',
                 '6': 'Unfall im längsverkehr',
                 '7': 'sonstiger Unfall',
+            },
+            icons: {
+                '1': 'fa-arrow-circle-up',
+                '2': 'fa-arrow-right',
+                '3': 'fa-arrows',
+                '4': 'fa-arrows-h',
+                '5': 'fa-hotel',
+                '6': 'fa-minus-square',
+                '7': 'fa-question',
             }
         },
         Urs01: {
