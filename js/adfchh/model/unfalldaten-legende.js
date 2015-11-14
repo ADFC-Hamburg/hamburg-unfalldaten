@@ -1,4 +1,4 @@
-define('model/unfalldaten-legende', [], function () {
+define('adfchh/model/unfalldaten-legende', [], function () {
 
     'use strict';
 

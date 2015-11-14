@@ -1,4 +1,4 @@
-define('view/comment', [
+define('adfchh/view/comment', [
     'jquery',
     'js.cookie',
 ], function ($, Cookies) {

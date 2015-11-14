@@ -1,11 +1,11 @@
-define('app/map', ['model/map',
-                  'model/unfalldaten-legende',
-                  'view/unfalldaten-popup',
+define('adfchh/app/map', ['adfchh/model/map',
+                  'adfchh/model/unfalldaten-legende',
+                  'adfchh/view/unfalldaten-popup',
     'jquery',
-    'model/version',
-    'view/comment',
+    'adfchh/model/version',
+    'adfchh/view/comment',
     'bootstrap',
-                  'model/searchbox',
+    'adfchh/model/searchbox',
     'bootstraptypehead',
    ], function (model, legende, ufPopup, $, version, comment, bootstrap, searchbox) {
 

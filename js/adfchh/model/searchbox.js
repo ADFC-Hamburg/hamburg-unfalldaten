@@ -1,5 +1,5 @@
-define('model/searchbox', [
-    'model/unfalldaten-legende',
+define('adfchh/model/searchbox', [
+    'adfchh/model/unfalldaten-legende',
     'jquery',
 ],
        function (legende, $) {
