@@ -16,7 +16,7 @@ define('adfchh/app/map', ['adfchh/model/map',
            };
        }
 
-       var dataUrl = 'data/RF_2014_Anonym.txt',
+       var dataUrl = 'data/out.csv',
            fieldSeparator = '\t',
            map=model.createMap(),
            query = window.location.search.substring(1), 
@@ -60,7 +60,7 @@ define('adfchh/app/map', ['adfchh/model/map',
 //               debugger;
                var t=legende.Typ.icons[feature.properties.typ];
                var c=legende.Kat.color[feature.properties.kat];
-               console.log(c);
+//               console.log(c);
                return new L.Marker(new L.LatLng(feature.geometry.coordinates[1], feature.geometry.coordinates[0]), {
                    icon: L.divIcon({
                        className: 'mmap-marker green '+c,
@@ -171,9 +171,8 @@ define('adfchh/app/map', ['adfchh/model/map',
                markers.addLayer(points);
         
                map.addLayer(markers);
-        
+
                if (openMarker !== 0) {
-            
                    markers.zoomToShowLayer(openMarker, function () {
                        openMarker.fire('click');
                        openMarker=0;
