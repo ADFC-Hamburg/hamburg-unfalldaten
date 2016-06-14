@@ -1,11 +1,11 @@
-define('app/map', ['model/map',
-                  'model/unfalldaten-legende',
-                  'view/unfalldaten-popup',
+define('adfchh/app/map', ['adfchh/model/map',
+                  'adfchh/model/unfalldaten-legende',
+                  'adfchh/view/unfalldaten-popup',
     'jquery',
-    'model/version',
-    'view/comment',
+    'adfchh/model/version',
+    'adfchh/view/comment',
     'bootstrap',
-                  'model/searchbox',
+    'adfchh/model/searchbox',
     'bootstraptypehead',
    ], function (model, legende, ufPopup, $, version, comment, bootstrap, searchbox) {
 
@@ -16,7 +16,7 @@ define('app/map', ['model/map',
            };
        }
 
-       var dataUrl = 'data/RF_2014_Anonym.txt',
+       var dataUrl = 'data/out.csv',
            fieldSeparator = '\t',
            map=model.createMap(),
            query = window.location.search.substring(1), 
@@ -60,7 +60,7 @@ define('app/map', ['model/map',
 //               debugger;
                var t=legende.Typ.icons[feature.properties.typ];
                var c=legende.Kat.color[feature.properties.kat];
-               console.log(c);
+//               console.log(c);
                return new L.Marker(new L.LatLng(feature.geometry.coordinates[1], feature.geometry.coordinates[0]), {
                    icon: L.divIcon({
                        className: 'mmap-marker green '+c,
@@ -171,9 +171,8 @@ define('app/map', ['model/map',
                markers.addLayer(points);
         
                map.addLayer(markers);
-        
+
                if (openMarker !== 0) {
-            
                    markers.zoomToShowLayer(openMarker, function () {
                        openMarker.fire('click');
                        openMarker=0;

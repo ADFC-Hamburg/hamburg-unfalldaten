@@ -1,4 +1,4 @@
-define('app/comment_freigabe', [
+define('adfchh/app/comment_freigabe', [
     'jquery',
     'bootstrap',
 ], function ($) {

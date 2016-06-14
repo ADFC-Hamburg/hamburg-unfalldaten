@@ -1,5 +1,5 @@
-define('model/map', ['jquery',
-    'model/version',
+define('adfchh/model/map', ['jquery',
+    'adfchh/model/version',
     'leaflet',
     'leafletmarker',
     'leafletgeocsv',
