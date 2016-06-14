@@ -364,7 +364,7 @@ define('adfchh/model/unfalldaten-legende', [], function () {
             keys: avKeys,
         },
         Jahr: {
-            ignore: true,
+	    title: 'Jahr',
         },
         Mt: {
             ignore: true,
@@ -417,6 +417,24 @@ define('adfchh/model/unfalldaten-legende', [], function () {
         OrdNr: {
             ignore: true,
         },
+	TagebuchNr: {
+	    title: 'Tagebuch Nr.',
+	},
+	Geschl_01: {
+	    title: 'Geschlecht Unfallverursacher',
+	},
+	Geschl_02: {
+	    title: 'Geschlecht nächster Beteiligter',
+	},
+	Alter_01: {
+	    title: 'Alter Unfallverursacher',
+	},
+	Alter_02: {
+	    title: 'Alter nächster Beteiligter',
+	},
+	x: {
+	    ignore: true,
+	}
     };
 
     return popupOpt;
