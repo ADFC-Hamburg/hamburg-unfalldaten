@@ -9,7 +9,7 @@
 ### Install
 
 ``` bash
-git clone git@gitlab.com:tabacha-de/adfchh-map.git
+git clone https://github.com/ADFC-Hamburg/hamburg-unfalldaten
 cd adfchh-map/
 npm install
 grunt
