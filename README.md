@@ -9,8 +9,8 @@
 ### Install
 
 ``` bash
-git clone git@gitlab.com:tabacha-de/adfchh-map.git
-cd adfchh-map/
+git clone https://github.com/ADFC-Hamburg/hamburg-unfalldaten
+cd hamburg-unfalldaten/
 npm install
 grunt
 cp $PATH_TO_UNFALLDATEN/RF_2014_Anonym.txt data/
@@ -28,7 +28,7 @@ vendor/bin/doctrine orm:schema-tool:create
 
 ### Update
 ``` bash
- cd adfchh-map
+ cd hamburg-unfalldaten/
  git pull
  bower install
  cd api
