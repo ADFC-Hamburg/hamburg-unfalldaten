@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "author": "Sven Anders",
   "devDependencies": {
+    "grunt": "^1.0.3",
     "grunt-bower-task": "^0.4.0",
     "grunt-contrib-clean": "^0.6.0",
     "grunt-contrib-copy": "^0.8.1",
@@ -13,5 +14,6 @@
     "grunt-contrib-watch": "^0.6.1",
     "grunt-eslint": "^17.1.0",
     "grunt-git-describe": "^2.3.2"
-  }
+  },
+  "dependencies": {}
 }
