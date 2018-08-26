@@ -1,7 +1,7 @@
 define('adfchh/view/unfalldaten-popup', [
     'adfchh/model/unfalldaten-legende',
     'jquery',
-    'async!https://maps.googleapis.com/maps/api/js?signed_in=true'
+    'async!https://maps.googleapis.com/maps/api/js?key=AIzaSyB6QF2xcvPjqdiUETbwqd6868_dZZi1QIc'
 ], function (legende) {
 
     'use strict';
