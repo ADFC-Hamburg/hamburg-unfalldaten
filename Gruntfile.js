@@ -9,7 +9,7 @@ module.exports = function(grunt) {
                     copy: false,
                     verbose: true,
                 },
-  //just run 'grunt bower:install' and you'll see files from your Bower packages in lib directory
+                //just run 'grunt bower:install' and you'll see files from your Bower packages in lib directory
             },
         },
         jshint: {
@@ -21,25 +21,25 @@ module.exports = function(grunt) {
         copy: {
             fonts: {
                 files: [
-      {expand: true, flatten: true, src: ['bower_components/*/fonts/*'], dest: 'fonts/', filter: 'isFile'},
+                    {expand: true, flatten: true, src: ['bower_components/*/fonts/*'], dest: 'fonts/', filter: 'isFile'},
                 ]
             },
             images: {
                 files: [
-      {expand: true, flatten: true, src: ['./bower_components/leaflet/dist/images/*'], dest: 'images/', filter: 'isFile'},
+                    {expand: true, flatten: true, src: ['./bower_components/leaflet/dist/images/*'], dest: 'images/', filter: 'isFile'},
                 ]
             },
             dist: {
                 files: [
-      {expand: true, flatten: false, src: ['index.html',
-        'comment_freigabe.php',
-        'api/**',
-        'css/generated.css*',
-        'bower_components/requirejs/require.js',
-        'fonts/*',
-        'data/*',
-        'bower_components/leaflet/dist/images/*'
-       ], dest: 'dist/', filter: 'isFile'},
+                    {expand: true, flatten: false, src: ['index.html',
+                        'comment_freigabe.php',
+                        'api/**',
+                        'css/generated.css*',
+                        'bower_components/requirejs/require.js',
+                        'fonts/*',
+                        'data/*',
+                        'bower_components/leaflet/dist/images/*'
+                    ], dest: 'dist/', filter: 'isFile'},
                 ]
             },
 

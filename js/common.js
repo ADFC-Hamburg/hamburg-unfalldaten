@@ -3,7 +3,6 @@ requirejs.config({
     paths: {
         jquery: '../bower_components/jquery/dist/jquery',
         'js.cookie': '../bower_components/js-cookie/src/js.cookie',
-//        leaflet: 'js/lib/leaflet-generated',
         bootstrap: '../bower_components/bootstrap/dist/js/bootstrap',
         bootstraptypehead: '../bower_components/bootstrap3-typeahead/bootstrap3-typeahead',
         async: '../bower_components/requirejs-plugins/src/async',
