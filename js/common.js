@@ -1,23 +1,30 @@
 requirejs.config({
     baseUrl: 'js',
     paths: {
-        jquery: '../bower_components/jquery/dist/jquery',
-        'js.cookie': '../bower_components/js-cookie/src/js.cookie',
-        bootstrap: '../bower_components/bootstrap/dist/js/bootstrap',
-        bootstraptypehead: '../bower_components/bootstrap3-typeahead/bootstrap3-typeahead',
-        async: '../bower_components/requirejs-plugins/src/async',
-        leaflet: '../bower_components/leaflet/dist/leaflet',
-        leafletmarker: '../bower_components/leaflet.markercluster/dist/leaflet.markercluster',
-        leaflethash: '../bower_components/leaflet-hash/leaflet-hash',
+        'popper': '../node_modules/popper.js/dist/umd/popper',
+        jquery: '../node_modules/jquery/dist/jquery',
+        'js.cookie': '../node_modules/js-cookie/src/js.cookie',
+        bootstrap: '../node_modules/bootstrap/dist/js/bootstrap.bundle',
+        'bootstrap-typeahead': '../node_modules/bootstrap-typeahead/bootstrap-typeahead',
+        async: '../node_modules/requirejs-plugins/src/async',
+        leaflet: '../node_modules/leaflet/dist/leaflet',
+        leafletmarker: '../node_modules/leaflet.markercluster/dist/leaflet.markercluster',
+        leaflethash: '../node_modules/leaflet-hash/leaflet-hash',
         leafletgeocsv: 'leaflet.geocsv-src'
     },
     shim: {
+        jquery: {
+	    exports: '$',
+        },
         jquerycookie: {
             deps: ['jquery'],
             exports: '$.cookie',
         },
         leafletmarker: {
             deps: ['leaflet'],
+        },
+        leaflet: {
+	    exports: 'L',
         },
         leaflethash: {
             deps: ['leaflet'],
@@ -28,7 +35,7 @@ requirejs.config({
         bootstrap: {
             deps: ['jquery'],
         },
-        bootsrtaptypehead: {
+        'bootstrap-typeahead': {
             deps: ['bootstrap'],
         }
     }

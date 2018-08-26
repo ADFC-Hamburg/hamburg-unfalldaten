@@ -6,7 +6,7 @@ define('adfchh/app/map', ['adfchh/model/map',
     'adfchh/view/comment',
     'bootstrap',
     'adfchh/model/searchbox',
-    'bootstraptypehead',
+    'bootstrap-typeahead',
    ], function (model, legende, ufPopup, $, version, comment, bootstrap, searchbox) {
 
        'use strict';

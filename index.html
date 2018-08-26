@@ -73,11 +73,14 @@
 	</div>
       </div>
     </div>
-    <script src="bower_components/requirejs/require.js"></script>
+    <script src="node_modules/requirejs/require.js"></script>
     <script> 
-        requirejs(['./js/common'], function (common) {
-              requirejs(['adfchh/app/map']);
-            });
+      requirejs(['./js/common'], function (common) {
+//         require(["popper"],function(p){
+//           window.Popper = p;
+           requirejs(['adfchh/app/map']);
+//         });
+      });
     </script>
 </body>
 </html>
