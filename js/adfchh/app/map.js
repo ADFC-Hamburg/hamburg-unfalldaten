@@ -43,6 +43,8 @@ define('adfchh/app/map', ['adfchh/model/map',
        var openMarker = 0;
        var points = model.LGeoCsv (null, {
            firstLineTitles: true,
+	   latitudeTitle: 'Koord.y',
+	   longitudeTitle: 'Koord.x',
            fieldSeparator: fieldSeparator,
            onEachFeature: function (feature, layer) {
                var popup='<div>Loading...</div>';
