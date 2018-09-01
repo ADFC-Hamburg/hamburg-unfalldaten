@@ -4,6 +4,7 @@
     "es6": true,
     "node": true
   },
+  "parserOptions": {
   "ecmaFeatures": {
     "arrowFunctions": true,
     "blockBindings": true,
@@ -16,6 +17,7 @@
     "spread": true,
     "templateStrings": true,
     "jsx": true
+  },
   },
   "rules": {
     "indent":[2,4, {"VariableDeclarator": 1}],

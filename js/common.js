@@ -9,7 +9,6 @@ requirejs.config({
         async: '../node_modules/requirejs-plugins/src/async',
         leaflet: '../node_modules/leaflet/dist/leaflet',
         leafletmarker: '../node_modules/leaflet.markercluster/dist/leaflet.markercluster',
-        leaflethash: '../node_modules/leaflet-hash/leaflet-hash',
         leafletgeocsv: 'leaflet.geocsv-src'
     },
     shim: {
@@ -25,9 +24,6 @@ requirejs.config({
         },
         leaflet: {
 	    exports: 'L',
-        },
-        leaflethash: {
-            deps: ['leaflet'],
         },
         leafletgeocsv: {
             deps: ['leaflet'],
