@@ -10,6 +10,7 @@
 
 ``` bash
 git clone https://github.com/ADFC-Hamburg/hamburg-unfalldaten
+
 cd hamburg-unfalldaten/
 npm install
 grunt
@@ -30,7 +31,6 @@ vendor/bin/doctrine orm:schema-tool:create
 ``` bash
  cd hamburg-unfalldaten/
  git pull
- bower install
  cd api
  $PATH_TO_COMPOSER/composer.phar install
  vendor/bin/doctrine orm:schema-tool:update
