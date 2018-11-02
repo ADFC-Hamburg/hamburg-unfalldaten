@@ -52,6 +52,8 @@ module.exports = function(grunt) {
                 files: {
                     'css/generated.css': [
                         'node_modules/leaflet/dist/leaflet.css',
+                        'node_modules/glyphicons-halflings/css/glyphicons-halflings.css',
+                        'node_modules/glyphicons-only-bootstrap/css/bootstrap.css',
                         'node_modules/bootstrap/dist/css/bootstrap.css',
                         'node_modules/leaflet.markercluster/dist/MarkerCluster.css',
                         'node_modules/leaflet.markercluster/dist/MarkerCluster.Default.css',
