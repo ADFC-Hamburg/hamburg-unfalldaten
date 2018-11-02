@@ -1,3 +1,4 @@
+define('leafletgeocsv', ['leaflet'], function (L) {
 /*
 * Copyright 2013 - GPL
 * Iván Eixarch <ivan@sinanimodelucro.org>
@@ -122,3 +123,4 @@ L.GeoCSV = L.GeoJSON.extend({
 L.geoCsv = function (csv_string, options) {
   return new L.GeoCSV (csv_string, options);
 };
+});

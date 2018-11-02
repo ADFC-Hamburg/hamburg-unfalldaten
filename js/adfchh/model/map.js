@@ -3,7 +3,7 @@ define('adfchh/model/map', ['jquery',
     'leaflet',
     'leafletmarker',
     'leafletgeocsv',
-    'leaflethash'], function ($, version, L) {
+    'leaflet-hash'], function ($, version, L) {
 
         'use strict';
         L.Icon.Default.imagePath = 'bower_components/leaflet/dist/images/';
