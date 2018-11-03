@@ -9,3 +9,7 @@ fonts/
 dist/
 js/adfchh/model/version.js
 images/
+.cache/
+data/Geodaten*anonymisiert.zip
+data/Geodaten*anonymisiert.txt
+package-lock.json

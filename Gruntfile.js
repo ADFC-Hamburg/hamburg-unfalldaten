@@ -1,4 +1,3 @@
-
 module.exports = function(grunt) {
  
     grunt.initConfig({
@@ -115,6 +114,78 @@ module.exports = function(grunt) {
     grunt.loadNpmTasks('grunt-contrib-watch');
     grunt.loadNpmTasks('grunt-git-describe');
     grunt.loadNpmTasks('grunt-contrib-requirejs');
+    grunt.registerTask('unzip-fdss-zip', 'Unzip one Zip file from fragdenstaat.de', function(zipFile) {
+        var gruntTaskName= this.name;
+        var done = this.async();
+        grunt.log.writeln(gruntTaskName + ', '+
+                          zipFile);
+        var dataDir = process.cwd()+ '/data';
+        var extract = require('extract-zip');
+        extract(zipFile,{ dir: dataDir}, function (err) {
+            if (err) {
+                grunt.log.writeln(gruntTaskName + ', '+err);
+                done(false);
+            } else {
+                done();
+            }
+        });
+    });
+    grunt.registerTask('download-fdss-zip', 'Download one Zip file from fragdenstaat.de', function(purl,zipFile) {
+        var baseurl='https://media.frag-den-staat.de/files/foi/';
+        var url=baseurl+ purl;
+        var gruntTaskName= this.name;
+        grunt.log.writeln(gruntTaskName + ', '+
+                                  url+ ' - ' +
+                                  zipFile);
 
+        var done = this.async();
+        var fs = require('fs');
+        var https = require('https');
+        var file = fs.createWriteStream(zipFile);
+        var request = https.get(url, function(response) {
+            console.log("\nstatus code: ", response.statusCode);
+            response.pipe(file);
+            file.on('finish', function() {
+                file.close(function () {
+                    grunt.log.writeln(gruntTaskName + 'done');
+                    grunt.task.run('unzip-fdss-zip:'+zipFile);
+                    done();
+                });
+            });
+        });
+        request.on('error', function(err) { // Handle errors
+            fs.unlinkSync(zipFile);
+            // Delete the file async. (But we don't check the result)
+            grunt.log.writeln(gruntTaskName +
+                              'failed to download:'+
+                              zipFile+
+                              ', '+
+                              err.message);
+            done(false);
+        });
+    });
+    grunt.registerTask('prep-data', 'Download Data from fragdenstaat.de', function() {
+        var gruntTaskName= this.name;
+        function download(url) {
+            var fs = require('fs');
+            var path = require('path');
+            var zipFile = 'data/' + path.basename(url);
+
+            if (fs.existsSync(zipFile)) {
+                grunt.log.writeln(gruntTaskName +
+                                  ', file exists, no download: ' +
+                                  zipFile);
+            } else {
+                grunt.task.run('download-fdss-zip:'+url+':'+zipFile);
+            }
+        }
+
+        var urls=[
+            '106840/Geodaten2009_2011anonymisiert.zip',
+            '106841/Geodaten2012_2014anonymisiert.zip',
+            '106842/Geodaten2015_2017anonymisiert.zip'
+        ];
+        urls.forEach(download);
+    });
     grunt.task.registerTask('default', [ 'git-describe', 'eslint', 'jshint', 'requirejs', 'cssmin', 'copy']);
 };

@@ -9,7 +9,8 @@ requirejs.config({
         async: '../node_modules/requirejs-plugins/src/async',
         leaflet: '../node_modules/leaflet/dist/leaflet',
         leafletmarker: '../node_modules/leaflet.markercluster/dist/leaflet.markercluster',
-        leafletgeocsv: 'leaflet.geocsv-src'
+        leafletgeocsv: 'leaflet.geocsv-src',
+        dexie: 'node_modules/dexie/dist/dexie'
     },
     shim: {
         jquery: {
