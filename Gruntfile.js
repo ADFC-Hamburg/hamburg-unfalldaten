@@ -119,9 +119,9 @@ module.exports = function(grunt) {
         var done = this.async();
         grunt.log.writeln(gruntTaskName + ', '+
                           zipFile);
-        var dataDir = process.cwd()+ '/data';
+        var dataDir = process.cwd() + '/data';
         var extract = require('extract-zip');
-        extract(zipFile,{ dir: dataDir}, function (err) {
+        extract(zipFile, {dir: dataDir}, function (err) {
             if (err) {
                 grunt.log.writeln(gruntTaskName + ', '+err);
                 done(false);
@@ -130,7 +130,7 @@ module.exports = function(grunt) {
             }
         });
     });
-    grunt.registerTask('download-fdss-zip', 'Download one Zip file from fragdenstaat.de', function(purl,zipFile) {
+    grunt.registerTask('download-fdss-zip', 'Download one Zip file from fragdenstaat.de', function(purl, zipFile) {
         var baseurl='https://media.frag-den-staat.de/files/foi/';
         var url=baseurl+ purl;
         var gruntTaskName= this.name;
@@ -143,7 +143,6 @@ module.exports = function(grunt) {
         var https = require('https');
         var file = fs.createWriteStream(zipFile);
         var request = https.get(url, function(response) {
-            console.log("\nstatus code: ", response.statusCode);
             response.pipe(file);
             file.on('finish', function() {
                 file.close(function () {
