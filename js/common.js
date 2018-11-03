@@ -10,7 +10,7 @@ requirejs.config({
         leaflet: '../node_modules/leaflet/dist/leaflet',
         leafletmarker: '../node_modules/leaflet.markercluster/dist/leaflet.markercluster',
         leafletgeocsv: 'leaflet.geocsv-src',
-        dexie: 'node_modules/dexie/dist/dexie'
+        dexie: '../node_modules/dexie/dist/dexie'
     },
     shim: {
         jquery: {

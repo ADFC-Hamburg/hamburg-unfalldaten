@@ -1,13 +1,16 @@
-define('adfchh/app/map', ['adfchh/model/map',
-                  'adfchh/model/unfalldaten-legende',
-                  'adfchh/view/unfalldaten-popup',
+define('adfchh/app/map', [
+    'adfchh/model/map',
+    'adfchh/model/unfalldaten-legende',
+    'adfchh/view/unfalldaten-popup',
     'jquery',
     'adfchh/model/version',
     'adfchh/view/comment',
     'bootstrap',
     'adfchh/model/searchbox',
+    'adfchh/app/indexDbUpdater',
+    // not in function
     'bootstrap-typeahead',
-   ], function (model, legende, ufPopup, $, version, comment, bootstrap, searchbox) {
+], function (model, legende, ufPopup, $, version, comment, bootstrap, searchbox, indexDbUpdater) {
 
        'use strict';
        if(typeof(String.prototype.strip) === 'undefined') {
@@ -225,6 +228,9 @@ define('adfchh/app/map', ['adfchh/model/map',
 
 
        $(document).ready( function() {
+           indexDbUpdater( function () {
+               console.log('done');
+           });
            $.ajax ({
                type: 'GET',
                dataType: 'text',

@@ -163,27 +163,48 @@ define('adfchh/model/unfalldaten-legende', [], function () {
                 '3': 'Landstraße',
                 '4': 'Kreisstraße',
                 '5': 'Gemeindestraße'
-            }
+            },
+            fieldNr: [6]
+        },
+        'Koord.X': {
+            dexieName: 'lon',
+            title: 'lon',
+            converter: 'float',
+            fieldNr: [4]
+        },
+        'Koord.Y': {
+            title: 'lat',
+            dexieName: 'lat',
+            converter: 'float',
+            fieldNr: [5]
         },
         NrBu: {
             title: 'Staßennummer',
-            descr: 'Nr. bei BAB oder Bundesstraße'
+            descr: 'Nr. bei BAB oder Bundesstraße',
+            fieldNr: [7]
         },
         LfNr: {
             title: 'Unfall Nr.',
+            fieldNr: [0]
         },
         Datum: {
-            title: 'Datum',
+            title: 'Zeit',
+            converter: "date",
+            fieldNr: [1,2]
         },
         Zeit: {
             title: 'Zeit',
+            ignore: true
         },
         Fahrtrichtung: {
             title: 'Fahrtrichtung',
+            converter: "richtung",
+            fieldNr: [50]
         },
 
         Zif: {
-            title: 'Ortsteilnummer'
+            title: 'Ortsteilnummer',
+            fieldNr: [8]
         },
         Gemeinde: {
             ignore: true,
@@ -193,23 +214,28 @@ define('adfchh/model/unfalldaten-legende', [], function () {
             keys: {
                 '1': 'innerorts',
                 '2': 'außerorts',
-            }
+            },
+            fieldNr: [10]
         },
         Gt: {
             title: 'Tote',
             descr: 'Anzahl bei dem Unfall getöteter Personen',
+            fieldNr: [11]
         },
         Sv: {
             title: 'Schwerverletzte',
             descr: 'Anzahl bei dem Unfall schwerverletzter Personen',
+            fieldNr: [12]
         },
         Lv: {
             title: 'Leichtverletzte',
             descr: 'Anzahl bei dem Unfall leichtverletzter Personen',
+            fieldNr: [13]
         },
         Bet: {
             title: 'Unfallbeteiligte',
             descr: 'Anzahl der Unfallbeteiligten',
+            fieldNr: [14]
         },
         Art: {
             title: 'Unfallart',
@@ -224,44 +250,51 @@ define('adfchh/model/unfalldaten-legende', [], function () {
                 '7': 'Aufprall auf Fahrbahnhindernis',
                 '8': 'Abkommen von Fahrbahn nach rechts',
                 '9': 'Abkommen von Fahrbahn nach links',
-            }
+            },
+            fieldNr: [15]
         },
         Char1: {
             title: 'Charakteristik 1',
             descr: 'Charakteristik Unfallstelle 1',
             searchGroup: 'Charakteristik',
-            keys: charKeys
+            keys: charKeys,
+            fieldNr: [16]
         },
         Char2: {
             title: 'Charakteristik 2',
             descr: 'Charakteristik Unfallstelle 2',
             searchGroup: 'Charakteristik',
-            keys: charKeys
+            keys: charKeys,
+            fieldNr: [17]
         },
  
         Char3: {
             title: 'Charakteristik 3',
             descr: 'Charakteristik Unfallstelle 3',
             searchGroup: 'Charakteristik',
-            keys: charKeys
+            keys: charKeys,
+            fieldNr: [18]
         },
         Beso1: {
             title: 'Besonderheiten 1',
             searchGroup: 'Besonderheiten',
             descr: 'Besonderheiten Unfallstelle 1',
-            keys: besoKeys
+            keys: besoKeys,
+            fieldNr: [19]
         },
         Beso2: {
             title: 'Besonderheiten 2',
             searchGroup: 'Besonderheiten',
             descr: 'Besonderheiten Unfallstelle 2',
-            keys: besoKeys
+            keys: besoKeys,
+            fieldNr: [20]
         },
         Beso3: {
             title: 'Besonderheiten 3',
             searchGroup: 'Besonderheiten',
             descr: 'Besonderheiten Unfallstelle 3',
-            keys: besoKeys
+            keys: besoKeys,
+            fieldNr: [21]
         },
         LZ: {
             title: 'Ampel',
@@ -270,11 +303,17 @@ define('adfchh/model/unfalldaten-legende', [], function () {
                 '0': 'keine',
                 '8': 'im Betrieb',
                 '9': 'außer Betrieb',
-            }
+            },
+            fieldNr: [22]
         },
         L: {
             title: 'Lichtverhältnisse',
-            fixme: 'Unterschied zu Licht',
+            keys: {
+                0: 'Tageslicht',
+                1: 'Dämmerung',
+                2: 'Dunkelheit',
+            },
+            fieldNr: [23]
         },
         SZ: {
             title: 'Straßenzustand',
@@ -284,7 +323,8 @@ define('adfchh/model/unfalldaten-legende', [], function () {
                 '1': 'nass / feucht',
                 '2': 'winterglatt',
                 '5': 'Schlüpfigkeit',
-            }
+            },
+            fieldNr: [24]
         },
         AH: {
             title: 'Aufprall auf Hindernis',
@@ -297,6 +337,7 @@ define('adfchh/model/unfalldaten-legende', [], function () {
                 '4': 'sonstiges Hindernis',
                 '5': 'kein Aufprall'
             },
+            fieldNr: [25]
         },
         Kat: {
             title: 'Unfallkategorie',
@@ -315,7 +356,8 @@ define('adfchh/model/unfalldaten-legende', [], function () {
                 '4': 'LightCyan',     
                 '5': 'silver',
                 '6': 'blue'
-            }
+            },
+            fieldNr: [26]
         },
         Typ: {
             title: 'Unfalltyp',
@@ -336,35 +378,42 @@ define('adfchh/model/unfalldaten-legende', [], function () {
                 '5': 'fa-hotel',
                 '6': 'fa-minus-square',
                 '7': 'fa-question',
-            }
+            },
+            fieldNr: [27]
         },
         Urs01: {
             title: 'Hauptunfallursache',
             descr: 'Hauptunfallursache des Hauptunfallverursachers',
             keys: ursKeys,
+            fieldNr: [28]
         },
         Urs02: {
             title: 'weitere Ursache 1',
             searchGroup: 'weitere Ursachen',
             descr: 'weitere Unfallursache des Hauptunfallverursachers',
             keys: ursKeys,
+            fieldNr: [29]
         },
         Urs03: {
             title: 'weitere Ursache 2',
             searchGroup: 'weitere Ursachen',
             descr: 'weitere Unfallursache des Hauptunfallverursachers',
             keys: ursKeys,
+            fieldNr: [30]
         },
         AV1: {
             title: 'Fahrzeug Hauptunfallverursacher',
             keys: avKeys,
+            fieldNr: [31]
         },
         AV2: {
             title: 'Fahrzeug nächster Unfallbeteiligter',
             keys: avKeys,
+            fieldNr: [32]
         },
         Jahr: {
 	    title: 'Jahr',
+            fieldNr: [33]
         },
         Mt: {
             ignore: true,
@@ -373,28 +422,24 @@ define('adfchh/model/unfalldaten-legende', [], function () {
             ignore: true,
         },
         Licht: {
-            title: 'Lichtverhältnisse',
-            keys: {
-                he: 'Tageslicht',
-                dae: 'Dämmerung',
-                wu: 'Dunkelheit',
-            }
+            ignore: true,
+            // siehe L
         },
         Str_Zus: {
-            title: 'Straßenzustand',
-            keys: {
-                tr: 'trocken',
-                na: 'nass',
-                wg: 'winterglatt',
-            }
+            ignore: true,
+            // siehe SZ
         },
         Bet_01: {
             title: 'Hauptunfallverursacher',
             keys: fahrzeugKeys,
+            fieldNr: [38],
+            ignore: true,
         },
         Bet_02: {
             title: 'nächster Beteiligter',
             keys: fahrzeugKeys,
+            fieldNr: [39],
+            ignore: true,
         },
         Unf_Typ: {
             descr: 'siehe Typ',
@@ -402,9 +447,13 @@ define('adfchh/model/unfalldaten-legende', [], function () {
         },
         Kz_Bet1: {
             title: 'Kennzeichen Hauptunfallverursacher',
+            converter: 'string',
+            fieldNr: [45]
         },
         Kz_Bet2: {
             title: 'Kennzeichen nächster Beteiligter',
+            converter: 'string',
+            fieldNr: [46]
         },
         BAB_Km: {
             title: 'BAB km',
@@ -419,18 +468,25 @@ define('adfchh/model/unfalldaten-legende', [], function () {
         },
 	TagebuchNr: {
 	    title: 'Tagebuch Nr.',
+            ignore: true,
 	},
 	Geschl_01: {
 	    title: 'Geschlecht Unfallverursacher',
+            converter: 'geschlecht',
+            fieldNr: [40]
 	},
 	Geschl_02: {
 	    title: 'Geschlecht nächster Beteiligter',
+            converter: 'geschlecht',
+            fieldNr: [41]
 	},
 	Alter_01: {
 	    title: 'Alter Unfallverursacher',
+            fieldNr: [42]
 	},
 	Alter_02: {
 	    title: 'Alter nächster Beteiligter',
+            fieldNr: [43]
 	},
 	x: {
 	    ignore: true,
