@@ -2,6 +2,11 @@ define('adfchh/model/unfalldaten-legende', [], function () {
 
     'use strict';
 
+    var geschlechtKeys =  {
+        '-1': 'unklar',
+        '0': 'mänlich',
+        '1': 'weiblich'
+    };
     var charKeys =   {
         '0': 'keine',
         '1': 'Kreuzung',
@@ -155,6 +160,10 @@ define('adfchh/model/unfalldaten-legende', [], function () {
         'SOF': 'Sonderfahrzeug',
     };
     var popupOpt = {
+        id: {
+            title: 'Interne-ID',
+            descr: 'Vom ADFC vergeben'
+        },
         Kl: {
             title: 'Straßenklasse',
             keys: {
@@ -166,14 +175,14 @@ define('adfchh/model/unfalldaten-legende', [], function () {
             },
             fieldNr: [6]
         },
-        'Koord.X': {
+        'lon': {
+            title: 'Longitude',
             dexieName: 'lon',
-            title: 'lon',
             converter: 'float',
             fieldNr: [4]
         },
-        'Koord.Y': {
-            title: 'lat',
+        'lat': {
+            title: 'Latitude',
             dexieName: 'lat',
             converter: 'float',
             fieldNr: [5]
@@ -473,11 +482,13 @@ define('adfchh/model/unfalldaten-legende', [], function () {
 	Geschl_01: {
 	    title: 'Geschlecht Unfallverursacher',
             converter: 'geschlecht',
+            keys: geschlechtKeys,
             fieldNr: [40]
 	},
 	Geschl_02: {
 	    title: 'Geschlecht nächster Beteiligter',
             converter: 'geschlecht',
+            keys: geschlechtKeys,
             fieldNr: [41]
 	},
 	Alter_01: {

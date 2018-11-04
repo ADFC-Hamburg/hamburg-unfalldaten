@@ -18,10 +18,12 @@ define('adfchh/view/unfalldaten-popup', [
     }
     calcKeysToLower();
 
-    function click(e, openComment) {
-        var lfnr=e.target.feature.properties.lfnr;
-        var url=window.location.href.split('?')[0]+'?lfnr='+lfnr,
-            shareTitle='Fahrradunfall+Nr.+'+lfnr+'+in+2014',
+    function click(e, openComment, unfallDb) {
+        var id=e.target.id;
+        var lfnr=e.target.LfNr;
+        var jahr=e.target.Jahr;
+        var url=window.location.href.split('?')[0]+'?lfnr='+lfnr+'&jahr='+jahr,
+            shareTitle='Fahrradunfall+Nr.+'+lfnr+'+aus+Jahr+'+jahr,
             popupj= $('<div>').addClass('popup-content').append($('<div id="street-view">'));
     
 //     var popup = '<div class="popup-content"><div id="street-view"></div>';
@@ -38,7 +40,7 @@ define('adfchh/view/unfalldaten-popup', [
         $.ajax ({
             type: 'GET',
             dataType: 'text',
-            url: 'api/comment.php/count/'+lfnr,
+            url: 'api/comment.php/count/'+id,
             error: function() {
                 td.text('Kommentierung zur Zeit deaktiviert');
             },
@@ -64,41 +66,54 @@ define('adfchh/view/unfalldaten-popup', [
         });
 
         table.append($('<tr>').append($('<th>').html('Kommentare'+share)).append(td));
+        unfallDb.get({id: e.target.id}, function (item) {
+            for (var clave in item) {
+                var title = keysLowerToUpper[clave];
+                if (title === undefined) {
+                    console.log('undef:', clave, '.');
+                    title = clave;
+                }
+                var attr = item[clave];
+                console.log(attr);
+                var ignore = false;
+                if ((typeof attr) == 'number') {
+                    if (isNaN(attr)) {
+                        ignore = true;
+                        attr = '';
+                    } 
+                    attr=attr.toString();
+                }
 
-        for (var clave in e.target.feature.properties) {
-            var title = keysLowerToUpper[clave];
-            if (title === undefined) {
-                console.log('undef:', clave, '.');
-            }
-            var attr = e.target.feature.properties[clave];
-            var ignore = false;
-            var tooltip = '';
-            if (legende[title] !== undefined) {
-                if (legende[title].keys !== undefined ) {
-                    if (legende[title].keys[attr] !== undefined) {
-                        attr=attr+': '+legende[title].keys[attr];
+                var tooltip = '';
+                if (legende[title] !== undefined) {
+                    if (legende[title].keys !== undefined ) {
+                        if (legende[title].keys[attr] !== undefined) {
+                            attr=attr+': '+legende[title].keys[attr];
+                        }
+                    }
+                    if (legende[title].ignore !== undefined) {
+                        ignore = legende[title].ignore;
+                    }
+                    if (legende[title].descr !== undefined) {
+                        tooltip = legende[title].descr;
+                    }
+                    // do this as last operation                                                                                                                                   
+                    if (legende[title].title !== undefined) {
+                        title=legende[title].title;
                     }
                 }
-                if (legende[title].ignore !== undefined) {
-                    ignore = legende[title].ignore;
+                if ((typeof attr) === 'string') {
+                    if (attr.indexOf('http') === 0) {
+                        attr = '<a target="_blank" href="' + attr + '">'+ attr + '</a>';
+                    }
                 }
-                if (legende[title].descr !== undefined) {
-                    tooltip = legende[title].descr;
-                }
-                    // do this as last operation                                                                                                                                   
-                if (legende[title].title !== undefined) {
-                    title=legende[title].title;
+                if ((attr) && (! ignore)) {
+                    table.append($('<tr>').html('<th title="'+tooltip+'">'+title+'</th><td>'+attr+'</td>'));
                 }
             }
-            if (attr.indexOf('http') === 0) {
-                attr = '<a target="_blank" href="' + attr + '">'+ attr + '</a>';
-            }
-            if ((attr) && (! ignore)) {
-                table.append($('<tr>').html('<th title="'+tooltip+'">'+title+'</th><td>'+attr+'</td>'));
-            }
-        }
-        popupj.append(table);
-        e.target._popup.setContent(popupj[0]);
+            popupj.append(table);
+            e.target._popup.setContent(popupj[0]);
+        });
 
         new google.maps.StreetViewPanorama(
                   document.getElementById('street-view'),

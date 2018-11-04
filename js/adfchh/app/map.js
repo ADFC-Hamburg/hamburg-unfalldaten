@@ -43,18 +43,15 @@ define('adfchh/app/map', [
            comment.open(lfnr);
        }
 
-       var openMarker = 0;
+    var openMarker = 0;
+    function createPointLayer() {
        var points = new L.FeatureGroup(null, {
            firstLineTitles: true,
 	   latitudeTitle: 'Koord.y',
 	   longitudeTitle: 'Koord.x',
            fieldSeparator: fieldSeparator,
            onEachFeature: function (feature, layer) {
-               var popup='<div>Loading...</div>';
-               layer.bindPopup(popup, model.popupOpts);
-               layer.on('click', function (e) {
-                   ufPopup.click(e, openComment);
-               });
+            
                if ( feature.properties.lfnr == lfnr) {
      // hier den Marker merken und dann spaeter oeffnen
                    openMarker = layer;
@@ -117,23 +114,30 @@ define('adfchh/app/map', [
                return false;
            }
        });
-       
+        return points;
+    }
+    var points = createPointLayer();
        if (typeof queryJSON.lfnr !== 'undefined') {
            lfnr=queryJSON.lfnr;
            console.log('lfnr', queryJSON.lfnr);
        }
 
+    var markersCallCount=0;
+    var addCsvMarkers = function() {
+        markersCallCount++;
+        var callCount=markersCallCount;
+        console.log('New addCsvMarks call, no:', callCount);
 
-       var addCsvMarkers = function() {
-           hits = 0;
-           total = 0;
-           $('#search-id option:selected').each(function(){
-               var key=this.id;
-               var filterString = document.getElementById('filter-string').value;
-               if (key === '*') {
-                   lowerFilterString = filterString.toLowerCase().strip();
-                   filterKey='';
-                   filterOp='eq';
+
+        hits = 0;
+        total = 0;
+        $('#search-id option:selected').each(function(){
+            var key=this.id;
+            var filterString = document.getElementById('filter-string').value;
+            if (key === '*') {
+                lowerFilterString = filterString.toLowerCase().strip();
+                filterKey='';
+                filterOp='eq';
                    if (filterString) {
                        $('#clear').fadeIn();
                    } else {
@@ -168,58 +172,88 @@ define('adfchh/app/map', [
                        $('#clear').fadeIn();
                    });
                }
-               map.removeLayer(markers);
-               points.clearLayers();
-               markers = model.newMarker();
+
+
+
+
                var steps=20000;
                //               var max  =82000;
                var max  = 50000;
-               
+               var pointsNew = createPointLayer();
                //        594272
-               function fillMarkersFromDb(start, callback) {
-                   var end=start+steps;
-                   if (end>max) {
-                       end=max;
-                   }
-                   unfallDb.where('id').between(start,end).toArray(function (items) {
-                       console.log('unfallDb.toArray ',start);
-                       items.forEach(function (item) {
-                           var t=legende.Typ.icons[item.Typ];
-                           var c=legende.Kat.color[item.Kat];
-                           var m=new L.Marker([item.lat, item.lon ], {
-                               icon: L.divIcon({
-                                   className: 'mmap-marker green '+c,
-                                   //                       iconSize:L.point(20, 30),
-                                   iconAnchor: [14, 30],
-                                   iconSize: [26, 26],
-                                   html: '<div class="icon fa '+t+'" /><div class="arrow" />'
-                               })
-                           });
-                           m.addTo(points);
-                           if ((item.id % 10000) === 0) {
-                               console.log(item);
-                           }
-                       });
-                       console.log(items.length);
-                       if (end==max) {
-                           callback();
-                       } else {
-                           if ((items.length+1) >= steps) {
-                               fillMarkersFromDb(end, callback);
-                           } else {
-                               callback();
-                           }
-                       }
-                   });
-               };
+            function fillMarkersFromDb(start, callback) {
+                var end=start+steps;
+                if (end>max) {
+                    end=max;
+                }
+                var b=map.getBounds();
+                console.log('unfallDb.toArray ',start);
+                console.log(b.getNorth(), b.getSouth());
+                unfallDb
+                    .where('lat').between(b.getSouth(), b.getNorth())
+                    .and(function (item) {
+                        return (item.lon>=b.getWest()) && (item.lon<=b.getEast());
+                    })
+                    .limit(max).toArray(function (items) {
+                        if (callCount<markersCallCount) {
+                            console.log('cancel old FillMarkers', callCount);
+                            return;
+                        }
 
-               console.log('unfallDb.toArray start');
-               fillMarkersFromDb(0, function (){
-                   console.log('unfallDb.each stop');
-                   markers.addLayer(points);
-                   
-                   map.addLayer(markers);
-                   
+                        items.forEach(function (item) {
+                            if (callCount<markersCallCount) {
+                                console.log('cancel old FillMarkers', callCount);
+                                return;
+                            }
+                            
+                            var t=legende.Typ.icons[item.Typ];
+                            var c=legende.Kat.color[item.Kat];
+                            var m=new L.Marker([item.lat, item.lon ], {
+                                icon: L.divIcon({
+                                    className: 'mmap-marker green '+c,
+                                    //                       iconSize:L.point(20, 30),
+                                    iconAnchor: [14, 30],
+                                    iconSize: [26, 26],
+                                    html: '<div class="icon fa '+t+'" /><div class="arrow" />'
+                                })
+                            });
+                            m.id=item.id;
+                            m.LfNr=item.LfNr;
+                            m.Jahr=item.Jahr
+                            var popup='<div>Loading...</div>';
+                            m.bindPopup(popup, model.popupOpts);
+                            m.on('click', function (e) {
+                                ufPopup.click(e, openComment, unfallDb );
+                            });
+                            m.addTo(pointsNew);
+                            if ((item.id % 10000) === 0) {
+                                console.log(item);
+                            }
+                        });
+                        if (callCount<markersCallCount) {
+                            console.log('cancel old FillMarkers', callCount);
+                            return;
+                        }
+                        
+                        console.log(items.length);
+                        callback();
+                    });
+            };
+            
+            console.log('unfallDb.toArray start');
+            fillMarkersFromDb(0, function (){
+                console.log('unfallDb.each stop');
+                if (callCount<markersCallCount) {
+                    console.log('cancel old FillMarkersFromDb', callCount);
+                    return;
+                }
+                map.removeLayer(markers);                   
+                points.clearLayers();
+                points= pointsNew;
+                markers = model.newMarker();
+                markers.addLayer(points);
+                map.addLayer(markers);
+                
                    if (openMarker !== 0) {
                        markers.zoomToShowLayer(openMarker, function () {
                            openMarker.fire('click');
@@ -274,7 +308,7 @@ define('adfchh/app/map', [
            indexDbUpdater( function (newUnfallDb) {
                if (unfallDb == null) {
                    unfallDb=newUnfallDb;
-                   //map.on('moveend', addCsvMarkers);
+                   map.on('moveend', addCsvMarkers);
                }
                //var csv="";
                //populateTypeAhead(csv, fieldSeparator);
