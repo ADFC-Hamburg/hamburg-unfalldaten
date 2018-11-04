@@ -6,7 +6,7 @@ define('adfchh/app/indexDbUpdater', [
 
     'use strict';
 
-    var MIN_COUNT=100;
+    var MIN_COUNT=594272;
     var START_JAHR = 2009;
     //var END_JAHR = 2009;
     var END_JAHR = 2017;
@@ -202,11 +202,11 @@ define('adfchh/app/indexDbUpdater', [
             if (count >= MIN_COUNT) {
                 console.log('data loaded count=',count);
                 view.hide();
-                callback();
+                callback(db.unfalldaten);
             } else {
                 fetchUnfalldatenAb(START_JAHR, db.unfalldaten, function () {
                     view.hide();
-                    callback();
+                    callback(db.unfalldaten);
                 });
                                    
             }

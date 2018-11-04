@@ -32,7 +32,7 @@ define('adfchh/app/map', [
            filterOp,
            lowerFilterVal,
            markers = model.newMarker(),
-           dataCsv,
+           unfallDb = null,
            lfnr;
 
                      
@@ -44,7 +44,7 @@ define('adfchh/app/map', [
        }
 
        var openMarker = 0;
-       var points = model.LGeoCsv (null, {
+       var points = new L.FeatureGroup(null, {
            firstLineTitles: true,
 	   latitudeTitle: 'Koord.y',
 	   longitudeTitle: 'Koord.x',
@@ -117,12 +117,11 @@ define('adfchh/app/map', [
                return false;
            }
        });
-
+       
        if (typeof queryJSON.lfnr !== 'undefined') {
            lfnr=queryJSON.lfnr;
            console.log('lfnr', queryJSON.lfnr);
        }
-
 
 
        var addCsvMarkers = function() {
@@ -172,20 +171,65 @@ define('adfchh/app/map', [
                map.removeLayer(markers);
                points.clearLayers();
                markers = model.newMarker();
-               points.addData(dataCsv);
-               markers.addLayer(points);
-        
-               map.addLayer(markers);
-
-               if (openMarker !== 0) {
-                   markers.zoomToShowLayer(openMarker, function () {
-                       openMarker.fire('click');
-                       openMarker=0;
+               var steps=20000;
+               //               var max  =82000;
+               var max  = 50000;
+               
+               //        594272
+               function fillMarkersFromDb(start, callback) {
+                   var end=start+steps;
+                   if (end>max) {
+                       end=max;
+                   }
+                   unfallDb.where('id').between(start,end).toArray(function (items) {
+                       console.log('unfallDb.toArray ',start);
+                       items.forEach(function (item) {
+                           var t=legende.Typ.icons[item.Typ];
+                           var c=legende.Kat.color[item.Kat];
+                           var m=new L.Marker([item.lat, item.lon ], {
+                               icon: L.divIcon({
+                                   className: 'mmap-marker green '+c,
+                                   //                       iconSize:L.point(20, 30),
+                                   iconAnchor: [14, 30],
+                                   iconSize: [26, 26],
+                                   html: '<div class="icon fa '+t+'" /><div class="arrow" />'
+                               })
+                           });
+                           m.addTo(points);
+                           if ((item.id % 10000) === 0) {
+                               console.log(item);
+                           }
+                       });
+                       console.log(items.length);
+                       if (end==max) {
+                           callback();
+                       } else {
+                           if ((items.length+1) >= steps) {
+                               fillMarkersFromDb(end, callback);
+                           } else {
+                               callback();
+                           }
+                       }
                    });
-               }
-               if (total > 0) {
-                   $('#search-results').html('Zeige ' + hits + ' von ' + total + '.');
-               }
+               };
+
+               console.log('unfallDb.toArray start');
+               fillMarkersFromDb(0, function (){
+                   console.log('unfallDb.each stop');
+                   markers.addLayer(points);
+                   
+                   map.addLayer(markers);
+                   
+                   if (openMarker !== 0) {
+                       markers.zoomToShowLayer(openMarker, function () {
+                           openMarker.fire('click');
+                           openMarker=0;
+                       });
+                   }
+                   if (total > 0) {
+                       $('#search-results').html('Zeige ' + hits + ' von ' + total + '.');
+                   }
+               });
            });
            return false;
        };
@@ -204,7 +248,6 @@ define('adfchh/app/map', [
                r.push(k);
            return r;
        }
-
        function populateTypeAhead(csv, delimiter) {
            var lines = csv.split('\n');
            for (var i = lines.length - 1; i >= 1; i--) {
@@ -228,24 +271,17 @@ define('adfchh/app/map', [
 
 
        $(document).ready( function() {
-           indexDbUpdater( function () {
-               console.log('done');
-           });
-           $.ajax ({
-               type: 'GET',
-               dataType: 'text',
-               url: dataUrl,
-               contentType: 'text/csv; charset=utf-8',
-               error: function() {
-                   alert('Error retrieving csv file');
-               },
-               success: function(csv) {
-                   dataCsv = csv;
-                   populateTypeAhead(csv, fieldSeparator);
-                   typeAheadSource = arrayToSet(typeAheadSource);
-                   $('#filter-string').typeahead({source: typeAheadSource});
-                   addCsvMarkers();
+           indexDbUpdater( function (newUnfallDb) {
+               if (unfallDb == null) {
+                   unfallDb=newUnfallDb;
+                   //map.on('moveend', addCsvMarkers);
                }
+               //var csv="";
+               //populateTypeAhead(csv, fieldSeparator);
+               //typeAheadSource = arrayToSet(typeAheadSource);
+               //$('#filter-string').typeahead({source: typeAheadSource});
+               addCsvMarkers();
+
            });
 
            $('#clear').click(function(evt){
