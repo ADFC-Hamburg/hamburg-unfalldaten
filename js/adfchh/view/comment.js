@@ -57,7 +57,7 @@ define('adfchh/view/comment', [
                     obj.addClass('has-error')
       .addClass('has-feedback')
       .append($('<span>')
-       .addClass('glyphicon glyphicon-remove form-control-feedback'));
+       .addClass('fa fa-times form-control-feedback'));
                     for (var i = 0; i < value.length; i++) {
                         obj.append($('<span>').addClass('help-block').text(value[i]));
                     }
