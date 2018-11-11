@@ -26,10 +26,10 @@ define('adfchh/model/unfalldaten-legende', [], function () {
         '7': 'verkehrsberuhigter Bereich'
     };
     var ursKeys = {
-        '01': 'Alkoholeinfluss',
-        '02': 'Einfluss anderer berauschender (z.B. Drogen, Rauschgift) ',
-        '03': 'Übermüdung',
-        '04': 'Sonstige körperliche oder geistige Mängel',
+        '1': 'Alkoholeinfluss',
+        '2': 'Einfluss anderer berauschender (z.B. Drogen, Rauschgift) ',
+        '3': 'Übermüdung',
+        '4': 'Sonstige körperliche oder geistige Mängel',
         '10': 'Benutzung der falschen Fahrbahn (a. Richtungsfahrbahn) od. verbotsw. Benutzung and. Straßenteile',
         '11': 'Verstoß gegen das Rechtsfahrgebot',
         '12': 'mit überschreiten der Höchstgeschwindigkeit',
@@ -180,12 +180,14 @@ define('adfchh/model/unfalldaten-legende', [], function () {
             title: 'Longitude',
             dexieName: 'lon',
             converter: 'float',
+            hideInSearch: true,
             fieldNr: [4]
         },
         'lat': {
             title: 'Latitude',
             dexieName: 'lat',
             converter: 'float',
+            hideInSearch: true,
             fieldNr: [5]
         },
         NrBu: {
@@ -200,6 +202,7 @@ define('adfchh/model/unfalldaten-legende', [], function () {
         Datum: {
             title: 'Zeit',
             converter: "date",
+            hideInSearch: true,
             fieldNr: [1,2]
         },
         Zeit: {
@@ -209,6 +212,11 @@ define('adfchh/model/unfalldaten-legende', [], function () {
         Fahrtrichtung: {
             title: 'Fahrtrichtung',
             converter: "richtung",
+            keys: {
+                '0':'absteigend',
+                '1':'aufsteigend',
+                '-1':'unklar'
+            },
             fieldNr: [50]
         },
 

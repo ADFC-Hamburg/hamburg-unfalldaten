@@ -201,18 +201,18 @@ define('adfchh/app/map', [
                 return latCheck(item) && lonCheck(item);
             };
 
-            if (sFilter[0]==='*') {
+            if (sFilter.id==='*') {
                 unfallDb
                     .where('lat').between(b.getSouth(), b.getNorth())
                     .and(lonCheck)
                     .limit(max).toArray(handleArrayResult);
             } else {
-                if (sFilter[1] === 'eq') {
-                    unfallDb.where(sFilter[0]).equals(sFilter[2])
+                if (sFilter.cmp === 'eq') {
+                    unfallDb.where(sFilter.id).equals(sFilter.val)
                         .and(latLonCheck)
                         .limit(max).toArray(handleArrayResult);     
                 } else {
-                    unfallDb.where(sFilter[0]).notEqual(sFilter[2])
+                    unfallDb.where(sFilter.id).notEqual(sFilter.val)
                         .and(latLonCheck)
                         .limit(max).toArray(handleArrayResult);     
                 }
