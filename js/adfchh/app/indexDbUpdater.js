@@ -103,7 +103,7 @@ define('adfchh/app/indexDbUpdater', [
     }
     
     function convertLineToObject (line ) {
-        var field = line.split("\t");
+        var field = line.trim().split("\t");
         var rtn={};
         var parseFunc={
             'int': parseInt,
@@ -131,28 +131,30 @@ define('adfchh/app/indexDbUpdater', [
                 if (!mfield.fieldNr) {
                     console.error('fieldnr fehlt im model', key, mfield);
                 }
-                if (mfield.fieldNr.length ===1) {
-                    value = func(field[mfield.fieldNr[0]]);
-                } else if (mfield.fieldNr.length ===2) {
-                    value = func(
-                        field[mfield.fieldNr[0]],
-                        field[mfield.fieldNr[1]]
-                    );
-                } else if (mfield.fieldNr.length ===3) {
-                    value = func(
-                        field[mfield.fieldNr[0]],
-                        field[mfield.fieldNr[1]],
-                        field[mfield.fieldNr[2]]
-                    );
-                } else if (mfield.fieldnr.length ===4) {
-                    value = func(
-                        field[mfield.fieldNr[0]],
-                        field[mfield.fieldNr[1]],
-                        field[mfield.fieldNr[2]],
-                        field[mfield.fieldNr[3]]
-                    );
+                if (mfield.fieldNr.length>0) {
+                    if (mfield.fieldNr.length ===1) {
+                        value = func(field[mfield.fieldNr[0]]);
+                    } else if (mfield.fieldNr.length ===2) {
+                        value = func(
+                            field[mfield.fieldNr[0]],
+                            field[mfield.fieldNr[1]]
+                        );
+                    } else if (mfield.fieldNr.length ===3) {
+                        value = func(
+                            field[mfield.fieldNr[0]],
+                            field[mfield.fieldNr[1]],
+                            field[mfield.fieldNr[2]]
+                        );
+                    } else if (mfield.fieldNr.length ===4) {
+                        value = func(
+                            field[mfield.fieldNr[0]],
+                            field[mfield.fieldNr[1]],
+                            field[mfield.fieldNr[2]],
+                            field[mfield.fieldNr[3]]
+                        );
+                    }
+                    rtn[dexieName]=value;
                 }
-                rtn[dexieName]=value;
             }
         });
         return rtn;
@@ -194,6 +196,7 @@ define('adfchh/app/indexDbUpdater', [
             }
         });
         view.show();
+        view.setText('Prüfe Datenbank..');
         db.version(1).stores({
             unfalldaten: databaseStr
         });
@@ -204,6 +207,7 @@ define('adfchh/app/indexDbUpdater', [
                 view.hide();
                 callback(db.unfalldaten);
             } else {
+                view.setHint('Wenn Sie ihren Browser Cache NICHT löschen, bleiben die Daten später erhalten und müssen nicht erneut geladen werden.');
                 fetchUnfalldatenAb(START_JAHR, db.unfalldaten, function () {
                     view.hide();
                     callback(db.unfalldaten);

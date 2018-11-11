@@ -3,6 +3,10 @@ define('adfchh/model/searchbox', [
     'jquery',
 ],
        function (legende, $) {
+           $('#search-op').fadeOut();
+           $('#search-value').fadeOut();
+           $('#filter-string').fadeOut();
+
            var ele=$('#search-id');
            ele.html('');
            ele.append($('<option>', {id: '*'}).text('Alles'));
@@ -32,7 +36,7 @@ define('adfchh/model/searchbox', [
                    if (key === '*') {
                        $('#search-op').fadeOut();
                        $('#search-value').fadeOut();
-                       $('#filter-string').fadeIn();
+                       $('#filter-string').fadeOut();
                    } else {
                        var sKey=key;
                        if (searchGroups[key] !== undefined) {
@@ -54,5 +58,103 @@ define('adfchh/model/searchbox', [
                    }
                });
            });
-           return {'searchGroups': searchGroups};
+
+           var searchFunc= function () {
+               console.err('SearchFunc not set');
+           };
+           function setSearchFunc(func)  {
+               searchFunc=func;
+           }
+           var filter=['*','=',''];
+           $('#clear').click(function(evt){
+               evt.preventDefault();
+               $('#search-id option[id=\'*\']').prop('selected', true);
+               $('#filter-string').val('').focus();
+               $('#search-op').fadeOut();
+               $('#search-value').fadeOut();
+               $('#filter-string').fadeOut();
+               filter=['*','=',''];
+               searchFunc();
+           });
+           $('.form-search').submit(function (e) {
+               e.preventDefault();
+               $('#search-id option:selected').each(function(){
+                   var key=this.id;
+                   var filterString = document.getElementById('filter-string').value;
+                   if (key === '*') {
+                       lowerFilterString = filterString.toLowerCase().strip();
+                       filterKey='';
+                       filterOp='eq';
+                       if (filterString) {
+                           $('#clear').fadeIn();
+                       } else {
+                           $('#clear').fadeOut();
+                       }
+                   } else {
+                       filterOp=$('#search-op option:selected').prop('id');
+                       if (searchGroups[key] !== undefined) {
+                           filterKey=searchGroups[key]
+                           
+                           $('#search-value option:selected').each(function(){
+                               var val=this.id;
+                               lowerFilterVal= val.toLowerCase().strip();
+                               $('#clear').fadeIn();
+                           });
+                       }  else if (legende[key].keys === undefined) {
+                           filterKey=key;
+                           lowerFilterVal= filterString.toLowerCase().strip();
+                           if (filterString) {
+                               $('#clear').fadeIn();
+                           } else {
+                               $('#clear').fadeOut();
+                           }
+                       } else {
+                           filterKey=key;
+                           filterOp=$('#search-op option:selected').prop('id');
+                           $('#search-value option:selected').each(function(){
+                               var val=this.id;
+                               lowerFilterVal= val;
+                               $('#clear').fadeIn();
+                           });
+                       }
+                   }
+                   var converter;
+                   if (typeof filterKey === 'string') {
+                       if (legende[filterKey].converter === undefined) {
+                           converter='int';
+                       } else {
+                           converter=legende[filterKey].converter
+                       };
+                   } else {
+                       if (legende[filterKey[0]].converter === undefined) {
+                           converter='int';
+                       } else {
+                           converter=legende[filterKey[0]].converter
+                       };
+                   }
+                   if (converter === 'int') {
+                       lowerFilterVal=parseInt(lowerFilterVal);
+                   } else if (converter === 'geschlecht') {
+                       lowerFilterVal=parseInt(lowerFilterVal);
+                   } else if (converter === 'richtung') {
+                       lowerFilterVal=parseInt(lowerFilterVal);
+                   } else if (converter === 'date') {
+                       //FIXME
+                   } else if (converter != 'string') {
+                       console.err('Converter not found');
+                   }
+                   filter=[filterKey,filterOp,lowerFilterVal];
+                   searchFunc();
+                   return true;
+               });
+           });
+           function getSearchCondition() {
+               return filter;
+           };
+           
+           return {
+               'searchGroups': searchGroups,
+               'setSearchFunc': setSearchFunc,
+               'getSearchCondition': getSearchCondition
+           };
        });

@@ -8,9 +8,10 @@ define('adfchh/app/map', [
     'bootstrap',
     'adfchh/model/searchbox',
     'adfchh/app/indexDbUpdater',
+    'adfchh/view/statusbar',
     // not in function
     'bootstrap-typeahead',
-], function (model, legende, ufPopup, $, version, comment, bootstrap, searchbox, indexDbUpdater) {
+], function (model, legende, ufPopup, $, version, comment, bootstrap, searchbox, indexDbUpdater, statusbar) {
 
        'use strict';
        if(typeof(String.prototype.strip) === 'undefined') {
@@ -19,8 +20,7 @@ define('adfchh/app/map', [
            };
        }
 
-       var dataUrl = 'data/out.csv',
-           fieldSeparator = '\t',
+       var fieldSeparator = '\t',
            map=model.createMap(),
            query = window.location.search.substring(1), 
            queryPairs = query.split('&'), 
@@ -46,10 +46,6 @@ define('adfchh/app/map', [
     var openMarker = 0;
     function createPointLayer() {
        var points = new L.FeatureGroup(null, {
-           firstLineTitles: true,
-	   latitudeTitle: 'Koord.y',
-	   longitudeTitle: 'Koord.x',
-           fieldSeparator: fieldSeparator,
            onEachFeature: function (feature, layer) {
             
                if ( feature.properties.lfnr == lfnr) {
@@ -74,6 +70,7 @@ define('adfchh/app/map', [
                });
            },
            filter: function(feature) {
+               debugger;
                total += 1;
                if (filterKey === '') {
                    if (!lowerFilterString) {
@@ -123,6 +120,7 @@ define('adfchh/app/map', [
        }
 
     var markersCallCount=0;
+    
     var addCsvMarkers = function() {
         markersCallCount++;
         var callCount=markersCallCount;
@@ -131,147 +129,137 @@ define('adfchh/app/map', [
 
         hits = 0;
         total = 0;
-        $('#search-id option:selected').each(function(){
-            var key=this.id;
-            var filterString = document.getElementById('filter-string').value;
-            if (key === '*') {
-                lowerFilterString = filterString.toLowerCase().strip();
-                filterKey='';
-                filterOp='eq';
-                   if (filterString) {
-                       $('#clear').fadeIn();
-                   } else {
-                       $('#clear').fadeOut();
-                   }
-               } else if (searchbox.searchGroups[key] !== undefined) {
-                   filterKey = [];
-                   for (var i = 0; i < searchbox.searchGroups[key].length; i++) {
-                       filterKey.push(searchbox.searchGroups[key][i].toLowerCase());
-                   }
-                   filterOp=$('#search-op option:selected').prop('id');
-                   $('#search-value option:selected').each(function(){
-                       var val=this.id;
-                       lowerFilterVal= val.toLowerCase().strip();
-                       $('#clear').fadeIn();
-                   });
-               }  else if (legende[key].keys === undefined) {
-                   filterKey=key.toLowerCase();
-                   filterOp=$('#search-op option:selected').prop('id');
-                   lowerFilterVal= filterString.toLowerCase().strip();
-                   if (filterString) {
-                       $('#clear').fadeIn();
-                   } else {
-                       $('#clear').fadeOut();
-                   }
-               } else {
-                   filterKey=key.toLowerCase();
-                   filterOp=$('#search-op option:selected').prop('id');
-                   $('#search-value option:selected').each(function(){
-                       var val=this.id;
-                       lowerFilterVal= val.toLowerCase().strip();
-                       $('#clear').fadeIn();
-                   });
-               }
+        var steps=20000;
+        //               var max  =82000;
+        var max  = 50000;
 
-
-
-
-               var steps=20000;
-               //               var max  =82000;
-               var max  = 50000;
-               var pointsNew = createPointLayer();
-               //        594272
-            function fillMarkersFromDb(start, callback) {
-                var end=start+steps;
-                if (end>max) {
-                    end=max;
-                }
-                var b=map.getBounds();
-                console.log('unfallDb.toArray ',start);
-                console.log(b.getNorth(), b.getSouth());
-                unfallDb
-                    .where('lat').between(b.getSouth(), b.getNorth())
-                    .and(function (item) {
-                        return (item.lon>=b.getWest()) && (item.lon<=b.getEast());
-                    })
-                    .limit(max).toArray(function (items) {
-                        if (callCount<markersCallCount) {
-                            console.log('cancel old FillMarkers', callCount);
-                            return;
-                        }
-
-                        items.forEach(function (item) {
-                            if (callCount<markersCallCount) {
-                                console.log('cancel old FillMarkers', callCount);
-                                return;
-                            }
-                            
-                            var t=legende.Typ.icons[item.Typ];
-                            var c=legende.Kat.color[item.Kat];
-                            var m=new L.Marker([item.lat, item.lon ], {
-                                icon: L.divIcon({
-                                    className: 'mmap-marker green '+c,
-                                    //                       iconSize:L.point(20, 30),
-                                    iconAnchor: [14, 30],
-                                    iconSize: [26, 26],
-                                    html: '<div class="icon fa '+t+'" /><div class="arrow" />'
-                                })
-                            });
-                            m.id=item.id;
-                            m.LfNr=item.LfNr;
-                            m.Jahr=item.Jahr
-                            var popup='<div>Loading...</div>';
-                            m.bindPopup(popup, model.popupOpts);
-                            m.on('click', function (e) {
-                                ufPopup.click(e, openComment, unfallDb );
-                            });
-                            m.addTo(pointsNew);
-                            if ((item.id % 10000) === 0) {
-                                console.log(item);
-                            }
-                        });
-                        if (callCount<markersCallCount) {
-                            console.log('cancel old FillMarkers', callCount);
-                            return;
-                        }
-                        
-                        console.log(items.length);
-                        callback();
-                    });
-            };
+        var pointsNew = createPointLayer();
+        //        594272
+        function fillMarkersFromDb(start, callback) {
             
-            console.log('unfallDb.toArray start');
-            fillMarkersFromDb(0, function (){
-                console.log('unfallDb.each stop');
+            var end=start+steps;
+            if (end>max) {
+                end=max;
+            }
+            var b=map.getBounds();
+            console.log('unfallDb.toArray ',start);
+            console.log(b.getNorth(), b.getSouth());
+            function handleArrayResult(items) {
                 if (callCount<markersCallCount) {
-                    console.log('cancel old FillMarkersFromDb', callCount);
+                    console.log('cancel old FillMarkers', callCount);
                     return;
                 }
-                map.removeLayer(markers);                   
-                points.clearLayers();
-                points= pointsNew;
-                markers = model.newMarker();
-                markers.addLayer(points);
-                map.addLayer(markers);
                 
-                   if (openMarker !== 0) {
-                       markers.zoomToShowLayer(openMarker, function () {
-                           openMarker.fire('click');
-                           openMarker=0;
-                       });
-                   }
-                   if (total > 0) {
-                       $('#search-results').html('Zeige ' + hits + ' von ' + total + '.');
-                   }
-               });
-           });
-           return false;
-       };
+                items.forEach(function (item) {
+                    if (callCount<markersCallCount) {
+                        console.log('cancel old FillMarkers', callCount);
+                        return;
+                    }
+                    
+                    var t=legende.Typ.icons[item.Typ];
+                    var c=legende.Kat.color[item.Kat];
+                    var m=new L.Marker([item.lat, item.lon ], {
+                        icon: L.divIcon({
+                            className: 'mmap-marker green '+c,
+                            //                       iconSize:L.point(20, 30),
+                            iconAnchor: [14, 30],
+                            iconSize: [26, 26],
+                            html: '<div class="icon fa '+t+'" /><div class="arrow" />'
+                        })
+                    });
+                    m.id=item.id;
+                    m.LfNr=item.LfNr;
+                    m.Jahr=item.Jahr
+                    var popup='<div>Loading...</div>';
+                    m.bindPopup(popup, model.popupOpts);
+                    m.on('click', function (e) {
+                        ufPopup.click(e, openComment, unfallDb );
+                    });
+                    m.addTo(pointsNew);
+                    if ((item.id % 10000) === 0) {
+                        console.log(item);
+                    }
+                });
+                if (callCount<markersCallCount) {
+                    console.log('cancel old FillMarkers', callCount);
+                    return;
+                }
+                
+                console.log(items.length);
+                hits= items.length;
+                callback();
+            };
 
-       $('.form-search').submit(addCsvMarkers);
+            var sFilter=searchbox.getSearchCondition();
+            function lonCheck(item) {
+                return (item.lon>=b.getWest()) && (item.lon<=b.getEast());
+            };
+            function latCheck(item) {
+                return (item.lat>=b.getSouth()) && (item.lon<=b.getNorth());;
+            };
+            function latLonCheck(item) {
+                return latCheck(item) && lonCheck(item);
+            };
 
+            if (sFilter[0]==='*') {
+                unfallDb
+                    .where('lat').between(b.getSouth(), b.getNorth())
+                    .and(lonCheck)
+                    .limit(max).toArray(handleArrayResult);
+            } else {
+                if (sFilter[1] === 'eq') {
+                    unfallDb.where(sFilter[0]).equals(sFilter[2])
+                        .and(latLonCheck)
+                        .limit(max).toArray(handleArrayResult);     
+                } else {
+                    unfallDb.where(sFilter[0]).notEqual(sFilter[2])
+                        .and(latLonCheck)
+                        .limit(max).toArray(handleArrayResult);     
+                }
+            }
 
-       var typeAheadSource = [];
+        };
+            
+        console.log('unfallDb.toArray start');
+        statusbar.show();
+        statusbar.setText('Lade Daten ...');
+        statusbar.startProgress();
+        fillMarkersFromDb(0, function (){
+            console.log('unfallDb.each stop');
+            if (callCount<markersCallCount) {
+                console.log('cancel old FillMarkersFromDb', callCount);
+                return;
+            }
+            //map.removeLayer(markers);
+            markers.addLayer(pointsNew);
+            markers.removeLayer(points);
+            
+            points.clearLayers();
+            points= pointsNew;
+            statusbar.stopProgress();
+            if (hits<max) {
+                statusbar.hide();
+            } else {
+                statusbar.zuVieleDaten();
+                statusbar.hideProgress();
+            }
+            //markers = model.newMarker();
+            //markers.addLayer(points);
+            //map.addLayer(markers);
+            
+            if (openMarker !== 0) {
+                markers.zoomToShowLayer(openMarker, function () {
+                    openMarker.fire('click');
+                    openMarker=0;
+                });
+            }
+            if (total > 0) {
+                $('#search-results').html('Zeige ' + hits + ' von ' + total + '.');
+            }
+        });
+        return false;
+    };
+
 
        function arrayToSet(a) {
            var temp = {};
@@ -282,53 +270,30 @@ define('adfchh/app/map', [
                r.push(k);
            return r;
        }
-       function populateTypeAhead(csv, delimiter) {
-           var lines = csv.split('\n');
-           for (var i = lines.length - 1; i >= 1; i--) {
-               var items = lines[i].split(delimiter);
-               for (var j = items.length - 1; j >= 0; j--) {
-                   var item = items[j].strip();
-                   item = item.replace(/"/g, '');
-                   if (item.indexOf('http') !== 0 && isNaN(parseFloat(item))) {
-                       typeAheadSource.push(item);
-                       var words = item.split(/\W+/);
-                       for (var k = words.length - 1; k >= 0; k--) {
-                           typeAheadSource.push(words[k]);
-                       }
-                   }
-               }
-           }
-       }
 
 
        map.addLayer(markers);
 
 
-       $(document).ready( function() {
-           indexDbUpdater( function (newUnfallDb) {
-               if (unfallDb == null) {
-                   unfallDb=newUnfallDb;
-                   map.on('moveend', addCsvMarkers);
-               }
-               //var csv="";
+    $(document).ready( function() {
+
+        indexDbUpdater( function (newUnfallDb) {
+            if (unfallDb == null) {
+                unfallDb=newUnfallDb;
+                map.on('moveend', addCsvMarkers);
+            }
+            //var csv="";
                //populateTypeAhead(csv, fieldSeparator);
                //typeAheadSource = arrayToSet(typeAheadSource);
-               //$('#filter-string').typeahead({source: typeAheadSource});
-               addCsvMarkers();
+            //$('#filter-string').typeahead({source: typeAheadSource});
+            searchbox.setSearchFunc(addCsvMarkers);
+            addCsvMarkers();
+            
+        });
 
-           });
+       
 
-           $('#clear').click(function(evt){
-               evt.preventDefault();
-               $('#search-id option[id=\'*\']').prop('selected', true);
-               $('#filter-string').val('').focus();
-               $('#search-op').fadeOut();
-               $('#search-value').fadeOut();
-               $('#filter-string').fadeIn();
-               addCsvMarkers();
-           });
-
-       });
+    });
 
 
-   });
+});

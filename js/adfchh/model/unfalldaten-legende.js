@@ -162,7 +162,8 @@ define('adfchh/model/unfalldaten-legende', [], function () {
     var popupOpt = {
         id: {
             title: 'Interne-ID',
-            descr: 'Vom ADFC vergeben'
+            descr: 'Vom ADFC vergeben',
+            fieldNr:[]
         },
         Kl: {
             title: 'Straßenklasse',

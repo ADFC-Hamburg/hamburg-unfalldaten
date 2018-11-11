@@ -76,6 +76,9 @@ define('adfchh/view/unfalldaten-popup', [
                 var attr = item[clave];
                 console.log(attr);
                 var ignore = false;
+                if (title === 'Datum') {
+                    attr=attr.toLocaleString();
+                }
                 if ((typeof attr) == 'number') {
                     if (isNaN(attr)) {
                         ignore = true;

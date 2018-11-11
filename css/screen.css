@@ -177,3 +177,15 @@ div#comment-from {
     background-color: white;
     height: 10ex;
 }
+
+.adfc-status-bar {
+    position: absolute;
+    left: 0;
+    right: 0;
+    margin-left: 0;
+    top: 95%;
+    margin-right: 0;
+    z-index: 999;
+    background-color: white;
+    height: 5%;
+}

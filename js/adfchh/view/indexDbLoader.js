@@ -7,7 +7,8 @@ define('adfchh/view/indexDbLoader', [
     var textEle=$('<div class="indexDbText">');
     ele.append(textEle);
     ele.append($('<div class="progress">').append(progress));
-    ele.append($('<div>').text('Wenn Sie ihren Browser Cache NICHT löschen, bleiben die Daten später erhalten und müssen nicht erneut geladen werden.'));
+    var hintEle=$('<div class="indexDBHint">');
+    ele.append(hintEle);
     var append=false;
     var startTime;
     var indexLoader={
@@ -45,6 +46,9 @@ define('adfchh/view/indexDbLoader', [
         },
         setProgress: function (width) {
             progress.width(width + '%'); 
+        },
+        setHint: function (txt) {
+            hintEle.text(txt);
         },
         hide: function () {
             ele.hide();
