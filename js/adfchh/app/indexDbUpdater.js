@@ -1,8 +1,9 @@
 define('adfchh/app/indexDbUpdater', [
     'dexie',
     'adfchh/model/unfalldaten-legende',
-    'adfchh/view/indexDbLoader'
-], function (Dexie, model, view) {
+    'adfchh/view/indexDbLoader',
+    'adfchh/model/lat-lon-tile-calc',
+], function (Dexie, model, view, tileCalc) {
 
     'use strict';
 
@@ -10,6 +11,9 @@ define('adfchh/app/indexDbUpdater', [
     var START_JAHR = 2009;
     //var END_JAHR = 2009;
     var END_JAHR = 2017;
+
+    const UNFALLDB= 'unfalldaten';
+    const DEL_UNFALLDB = [ 'unfalldaten'];
     function loadUnfalldaten(fileContent, unfallDb, jahr) {
         var def=$.Deferred();
         var lines = fileContent.split("\n");
@@ -157,6 +161,9 @@ define('adfchh/app/indexDbUpdater', [
                 }
             }
         });
+        rtn['tile']=
+            tileCalc.lat2tile(rtn['lat'],tileCalc.stdzoom)+'x'+
+            tileCalc.lon2tile(rtn['lon'],tileCalc.stdzoom);
         return rtn;
     }
     function fetchUnfalldatenAb(jahr, unfallDb, callback) {
@@ -184,12 +191,18 @@ define('adfchh/app/indexDbUpdater', [
     }
 
     function indexDbUpdater(callback) {
-        var db = new Dexie("unfalldaten");
-        var databaseStr='id++';
+        var db = new Dexie(UNFALLDB);
+        var databaseStr='id++,tile';
         Object.keys(model).forEach(function (key) {
             if (! model[key].ignore) {
                 if (model[key].dexieName) {
                     databaseStr = databaseStr + ',' + model[key].dexieName;
+                } else if (model[key].searchGroup) {
+                    var sgName=model[key].searchGroup;
+                    sgName=sgName.replace(' ','');
+                    if (databaseStr.indexOf(','+sgName)===-1) {
+                        databaseStr = databaseStr + ',' + sgName;
+                    }
                 } else {
                     databaseStr = databaseStr + ',' + key;
                 }
@@ -197,27 +210,27 @@ define('adfchh/app/indexDbUpdater', [
         });
         view.show();
         view.setText('Prüfe Datenbank..');
-        db.version(1).stores({
-            unfalldaten: databaseStr
-        });
 
-        db.unfalldaten.count().then(function (count) {
+        var storArr={};
+        storArr[UNFALLDB]=databaseStr;
+        db.version(1).stores(storArr);
+        console.log(storArr);
+        db.table(UNFALLDB).count().then(function (count) {
             if (count >= MIN_COUNT) {
                 console.log('data loaded count=',count);
                 view.hide();
                 callback(db.unfalldaten);
             } else {
                 view.setHint('Wenn Sie ihren Browser Cache NICHT löschen, bleiben die Daten später erhalten und müssen nicht erneut geladen werden.');
-                fetchUnfalldatenAb(START_JAHR, db.unfalldaten, function () {
+                fetchUnfalldatenAb(START_JAHR, db.table(UNFALLDB), function () {
                     view.hide();
-                    callback(db.unfalldaten);
+                    callback(db[UNFALLDB]);
                 });
-                                   
+                
             }
         });
     };
 
-
     return indexDbUpdater;
-    
+                                               
 });

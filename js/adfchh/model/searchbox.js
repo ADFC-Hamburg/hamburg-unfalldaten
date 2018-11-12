@@ -16,13 +16,52 @@ define('adfchh/model/searchbox', [
            var btnSubmit=$('<button type="submit" class="btn btn-primary">').append($('<span class="fa fa-filter">'));
            condBox.append(searchId);
            var moreDiv=$('<div class="search-line">');
+           var filter={id:'*',cmp:'eq',val:''};
+           var moreFilter=[];
+           const cmpLabel= {
+               'eq': '=',
+               'ne': '≠'
+           };
+           const compositLabel = {
+               'and': ' und ',
+               'or': ' oder '
+           };
+           function removeMore() {
+               moreDiv.html('');
+           };
            searchBox.append(moreDiv);
            searchBox.append(condBox);
            searchBox.append(btnAnd);
            searchBox.append(btnOr);
            function moreCodition(what) {
                calcFilter();
-               moreDiv.append($('<div>').text(filter));
+               filter.comp=what;
+               moreFilter.push(filter);
+               var tooltip=legende[filter.id].title+ cmpLabel[filter.cmp];
+               if (legende[filter.id].keys) {
+                   if (!Array.isArray(filter.val)) {
+                       tooltip=tooltip+legende[filter.id].keys[filter.val];
+                   } else {
+                       var comma='';
+                       for (var i = 0; i < filter.val.length; i++) {
+                           tooltip=tooltip+comma+legende[filter.id].keys[filter.val[i]];
+                           comma=',';
+                       }
+                           
+                   }
+               } else {
+                   tooltip=tooltip+filter.val;
+               }
+               moreDiv.append($('<div>',{title:tooltip}).text('('+filter.id+' '+cmpLabel[filter.cmp]+' '+filter.val+')'));
+               moreDiv.append($('<div>').text(compositLabel[what]));
+               // rest filter:
+               filter={id:'*',cmp:'eq',val:''};               
+               searchId.val('*');
+               removeSearchOp();
+               removeSearchValue();
+               removeFilterString();
+               btnAnd.fadeOut();
+               btnOr.fadeOut();
            }
            btnAnd.click( function () {
                moreCodition('and');
@@ -97,6 +136,7 @@ define('adfchh/model/searchbox', [
                    nonSelectedText: 'Bitte wählen',
                    allSelectedText: 'Alle',
                    nSelectedText: ' - gewählt',
+                   maxHeight: 400,
                    numberDisplayed: 1
                });
 
@@ -167,26 +207,34 @@ define('adfchh/model/searchbox', [
            function setSearchFunc(func)  {
                searchFunc=func;
            }
-           var filter={id:'*',cmp:'eq',val:''};
+
            clear.click(function(evt){
                evt.preventDefault();
                searchId.val('*');
                removeSearchOp();
                removeSearchValue();
                removeFilterString();
-
+               removeMore();
+               moreFilter=[];
                filter={id:'*',cmp:'eq',val:''};
                searchFunc();
            });
 
            function calcFilter() {
+               var lowerFilterVal,filterKey,filterOp;
                var key=searchId.val();
                if (key === '*') {
-                   lowerFilterString = '';
-                   filterKey='';
+                   lowerFilterVal = '';
+                   filterKey='*';
                    filterOp='eq';
-                   clear.fadeOut();
+                   if (moreFilter.length===0) {
+                       clear.fadeOut();
+                   }
+                   btnAnd.fadeOut();
+                   btnOr.fadeOut();
                } else {
+                   btnAnd.fadeIn();
+                   btnOr.fadeIn();
                    filterOp=searchOp.val();
                    if (searchGroups[key] !== undefined) {
                        filterKey=searchGroups[key];
@@ -201,37 +249,39 @@ define('adfchh/model/searchbox', [
                        lowerFilterVal= searchValue.val();
                    }
                    clear.fadeIn();
-               }
-               var converter;
-               if (typeof filterKey === 'string') {
-                   if (legende[filterKey].converter === undefined) {
-                       converter='int';
-                   } else {
-                       converter=legende[filterKey].converter
-                   };
-               } else {
-                   if (legende[filterKey[0]].converter === undefined) {
-                       converter='int';
-                   } else {
-                       converter=legende[filterKey[0]].converter
-                   };
-               }
-               if ((converter === 'int') || (converter === 'geschlecht') || (converter === 'richtung')) {
-                   if (typeof lowerFilterVal === 'string') {
-                       lowerFilterVal=parseInt(lowerFilterVal);
-                   } else {
-                       if (lowerFilterVal.length===1) {
-                           lowerFilterVal=parseInt(lowerFilterVal[0]);
+               
+                   var converter;
+                   if (typeof filterKey === 'string') {
+                       if (legende[filterKey].converter === undefined) {
+                           converter='int';
                        } else {
-                           for (var i = 0; i < lowerFilterVal.length; i++) {
-                               lowerFilterVal[i]=parseInt(lowerFilterVal[i]);
-                           };
-                       }
+                           converter=legende[filterKey].converter;
+                       };
+                   } else {
+                       if (legende[filterKey[0]].converter === undefined) {
+                           converter='int';
+                       } else {
+                           converter=legende[filterKey[0]].converter;
+                       };
                    }
-               } else if (converter === 'date') {
-                   //FIXME
-               } else if (converter != 'string') {
-                   console.err('Converter not found');
+                   if ((converter === 'int') || (converter === 'geschlecht') || (converter === 'richtung')) {
+                       if (typeof lowerFilterVal === 'string') {
+                           lowerFilterVal=parseInt(lowerFilterVal);
+                       } else {
+                           if (lowerFilterVal.length===1) {
+                               lowerFilterVal=parseInt(lowerFilterVal[0]);
+                           } else {
+                               for (var i = 0; i < lowerFilterVal.length; i++) {
+                                   lowerFilterVal[i]=parseInt(lowerFilterVal[i]);
+                               };
+                           }
+                       }
+                   } else if (converter === 'date') {
+                       //FIXME
+                       console.err('Date converter not implemented');
+                   } else if (converter != 'string') {
+                       console.err('Converter not found');
+                   }
                }
                filter={id:filterKey,cmp:filterOp,val:lowerFilterVal};
            }
@@ -242,7 +292,11 @@ define('adfchh/model/searchbox', [
                return true;
            });
            function getSearchCondition() {
-               return filter;
+               var rtnFilter=moreFilter.slice(0);
+               rtnFilter.push(filter);
+               console.log('rtnFilter', rtnFilter);
+               console.log('mFilter', moreFilter);
+               return rtnFilter;
            };
            
            return {

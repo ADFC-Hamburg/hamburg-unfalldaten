@@ -190,7 +190,7 @@ define('adfchh/app/map', [
                 callback();
             };
 
-            var sFilter=searchbox.getSearchCondition();
+            var sFilterArr=searchbox.getSearchCondition();
             function lonCheck(item) {
                 return (item.lon>=b.getWest()) && (item.lon<=b.getEast());
             };
@@ -201,35 +201,45 @@ define('adfchh/app/map', [
                 return latCheck(item) && lonCheck(item);
             };
 
-            if (sFilter.id==='*') {
-                unfallDb
-                    .where('lat').between(b.getSouth(), b.getNorth())
-                    .and(lonCheck)
-                    .limit(max).toArray(handleArrayResult);
-            } else {
-                if (Array.isArray(sFilter.val)) {
-                    if (sFilter.cmp === 'eq') {
-                        unfallDb.where(sFilter.id).anyOf(sFilter.val)
-                            .and(latLonCheck)
-                            .limit(max).toArray(handleArrayResult);     
+            function filterOne(item, sFilter) {
+                if (sFilter.id === '*') {
+                    return true;
+                }
+                var val=item[sFilter.id];
+                if (!Array.isArray(sFilter.val)) {
+                    sFilter.val=[sFilter.val];
+                }
+                var rtn=(sFilter.val.indexOf(val) != -1);
+                if (sFilter.cmp === 'ne' ) {
+                    rtn=!rtn;
+                }
+                return rtn;
+            };
+            function filterArrFunc(item, arrIn) {
+                var arr=arrIn.slice(0);
+                var sFilter=arr.shift();
+                if (arr.length>0) {
+                    if (sFilter.comp === 'and') {
+                        return filterOne(item,sFilter) && filterArrFunc(item, arr);
                     } else {
-                        unfallDb.where(sFilter.id).noneOf(sFilter.val)
-                            .and(latLonCheck)
-                            .limit(max).toArray(handleArrayResult);     
+                        // comp === 'or'
+                        return filterOne(item,sFilter) || filterArrFunc(item, arr);
                     }
                 } else {
-                    if (sFilter.cmp === 'eq') {
-                        unfallDb.where(sFilter.id).equals(sFilter.val)
-                            .and(latLonCheck)
-                            .limit(max).toArray(handleArrayResult);     
-                    } else {
-                        unfallDb.where(sFilter.id).notEqual(sFilter.val)
-                            .and(latLonCheck)
-                            .limit(max).toArray(handleArrayResult);     
-                    }
+                    return filterOne(item,sFilter);
                 }
             }
-
+            function filterFunc(item) {
+                if (!lonCheck(item)) {
+                    return false;
+                }//else
+                return filterArrFunc(item, sFilterArr);
+                
+            }
+            unfallDb
+                .where('lat').between(b.getSouth(), b.getNorth())
+                .and(filterFunc)
+                .limit(max).toArray(handleArrayResult);
         };
             
         console.log('unfallDb.toArray start');
