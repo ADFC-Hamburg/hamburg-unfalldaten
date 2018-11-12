@@ -1,6 +1,7 @@
 define('adfchh/model/searchbox', [
     'adfchh/model/unfalldaten-legende',
     'jquery',
+    'bootstrap-multiselect'
 ],
        function (legende, $) {
            var searchBox=$('#search-box');
@@ -21,7 +22,7 @@ define('adfchh/model/searchbox', [
            searchBox.append(btnOr);
            function moreCodition(what) {
                calcFilter();
-               moreDiv.append($('<div>').text("a=42"));
+               moreDiv.append($('<div>').text(filter));
            }
            btnAnd.click( function () {
                moreCodition('and');
@@ -80,9 +81,10 @@ define('adfchh/model/searchbox', [
            }
            function createSearchValue(key) {
                if (searchValue) {
+                   searchValue.multiselect('destroy');
                    searchValue.empty();
                } else {
-                   searchValue=$('<select name="search-value" id="search-value" class="search-value" size="1">');
+                   searchValue=$('<select name="search-value" id="search-value" class="search-value" size="1" multiple="multiple">');
                    console.log('condBoxAppend searchValue');
                    condBox.append(searchValue);
                }
@@ -90,11 +92,19 @@ define('adfchh/model/searchbox', [
                for (var value in keyLeg.keys) {
                    searchValue.append($('<option>', {value: value}).text(keyLeg.keys[value]));
                }
-               searchValue.fadeIn();
+               searchValue.multiselect({
+                   buttonWidth: '120px',
+                   nonSelectedText: 'Bitte wählen',
+                   allSelectedText: 'Alle',
+                   nSelectedText: ' - gewählt',
+                   numberDisplayed: 1
+               });
+
            }
            function removeSearchValue() {
                if (searchValue) {
                    searchValue.fadeOut();
+                   searchValue.multiselect('destroy');
                    console.log('condBoxRemove searchValue');
                    searchValue.remove();
                    searchValue = null;
@@ -184,7 +194,7 @@ define('adfchh/model/searchbox', [
                        lowerFilterVal= val.toLowerCase().strip();
                    }  else if (legende[key].keys === undefined) {
                        filterKey=key;
-                       lowerFilterVal= filterString.value().toLowerCase().strip();
+                       lowerFilterVal= filterString.val().toLowerCase().strip();
                    } else {
                        filterKey=key;
                        filterOp=searchOp.val();
@@ -206,12 +216,18 @@ define('adfchh/model/searchbox', [
                        converter=legende[filterKey[0]].converter
                    };
                }
-               if (converter === 'int') {
-                   lowerFilterVal=parseInt(lowerFilterVal);
-               } else if (converter === 'geschlecht') {
-                   lowerFilterVal=parseInt(lowerFilterVal);
-               } else if (converter === 'richtung') {
-                   lowerFilterVal=parseInt(lowerFilterVal);
+               if ((converter === 'int') || (converter === 'geschlecht') || (converter === 'richtung')) {
+                   if (typeof lowerFilterVal === 'string') {
+                       lowerFilterVal=parseInt(lowerFilterVal);
+                   } else {
+                       if (lowerFilterVal.length===1) {
+                           lowerFilterVal=parseInt(lowerFilterVal[0]);
+                       } else {
+                           for (var i = 0; i < lowerFilterVal.length; i++) {
+                               lowerFilterVal[i]=parseInt(lowerFilterVal[i]);
+                           };
+                       }
+                   }
                } else if (converter === 'date') {
                    //FIXME
                } else if (converter != 'string') {

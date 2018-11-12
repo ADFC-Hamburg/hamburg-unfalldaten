@@ -57,6 +57,7 @@ module.exports = function(grunt) {
                         'node_modules/leaflet.markercluster/dist/MarkerCluster.css',
                         'node_modules/leaflet.markercluster/dist/MarkerCluster.Default.css',
                         'node_modules/font-awesome/css/font-awesome.css',
+                        'node_modules/bootstrap-multiselect/dist/css/bootstrap-multiselect.css',
                         'css/screen.css'
                     ]
                 }

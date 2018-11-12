@@ -207,14 +207,26 @@ define('adfchh/app/map', [
                     .and(lonCheck)
                     .limit(max).toArray(handleArrayResult);
             } else {
-                if (sFilter.cmp === 'eq') {
-                    unfallDb.where(sFilter.id).equals(sFilter.val)
-                        .and(latLonCheck)
-                        .limit(max).toArray(handleArrayResult);     
+                if (Array.isArray(sFilter.val)) {
+                    if (sFilter.cmp === 'eq') {
+                        unfallDb.where(sFilter.id).anyOf(sFilter.val)
+                            .and(latLonCheck)
+                            .limit(max).toArray(handleArrayResult);     
+                    } else {
+                        unfallDb.where(sFilter.id).noneOf(sFilter.val)
+                            .and(latLonCheck)
+                            .limit(max).toArray(handleArrayResult);     
+                    }
                 } else {
-                    unfallDb.where(sFilter.id).notEqual(sFilter.val)
-                        .and(latLonCheck)
-                        .limit(max).toArray(handleArrayResult);     
+                    if (sFilter.cmp === 'eq') {
+                        unfallDb.where(sFilter.id).equals(sFilter.val)
+                            .and(latLonCheck)
+                            .limit(max).toArray(handleArrayResult);     
+                    } else {
+                        unfallDb.where(sFilter.id).notEqual(sFilter.val)
+                            .and(latLonCheck)
+                            .limit(max).toArray(handleArrayResult);     
+                    }
                 }
             }
 
