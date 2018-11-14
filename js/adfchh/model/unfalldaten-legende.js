@@ -25,11 +25,22 @@ define('adfchh/model/unfalldaten-legende', [], function () {
         '6': 'Arbeitsstelle',
         '7': 'verkehrsberuhigter Bereich'
     };
+    var ursKeyGroups = {
+        '1-4': 'Verkehrstüchtigkeit',
+        '8-11': 'Staßennutzung',
+        '12-13': 'Geschwingigkeit',
+        '14-15': 'Abstand',
+        '16-23': 'Überholen',
+        '24-25': 'Vorbeifahren',
+        // FIXME
+    }
     var ursKeys = {
-        '01': 'Alkoholeinfluss',
-        '02': 'Einfluss anderer berauschender (z.B. Drogen, Rauschgift) ',
-        '03': 'Übermüdung',
-        '04': 'Sonstige körperliche oder geistige Mängel',
+        '1': 'Alkoholeinfluss',
+        '2': 'Einfluss anderer berauschender (z.B. Drogen, Rauschgift) ',
+        '3': 'Übermüdung',
+        '4': 'Sonstige körperliche oder geistige Mängel',
+        '8': 'Falschfahrt auf Straßen mit nach Fahrtrichtung getrennten Fahrbahnen',
+        '9': 'Benutzung der Fahrbahn entgegen der vorgeschriebenen Fahrtrichtung in anderen Fällen',
         '10': 'Benutzung der falschen Fahrbahn (a. Richtungsfahrbahn) od. verbotsw. Benutzung and. Straßenteile',
         '11': 'Verstoß gegen das Rechtsfahrgebot',
         '12': 'mit überschreiten der Höchstgeschwindigkeit',
@@ -54,7 +65,8 @@ define('adfchh/model/unfalldaten-legende', [], function () {
         '31': 'Nichtbeachten der Verkehrsregelung d. Pol-Bea oder LZA, ausgenommen Pos 39',
         '32': 'Nichtbeachten des Vorrangs entgegenkommender Fz (Z 208) ',
         '33': 'Nichtbeachten des Vorranges von Schienenfahrzeugen an Bahnübergängen',
-        '35': 'Fehler beim Abbiegen (§9), ausgenommen Pos. 33, 40',
+        '34': 'Fehler beim Abbiegen (§9), nach rechts (ausgenommen Pos 33,30)',
+        '35': 'Fehler beim Abbiegen (§9), nach links (ausgenommen Pos.33,40)',
         '36': 'Fehler beim Wenden od. Rückwärtsfahren',
         '37': 'Fehler beim Einfahren in den fließenden Verkehr',
         '38': 'an Fußgängerüberwegen',
@@ -75,6 +87,7 @@ define('adfchh/model/unfalldaten-legende', [], function () {
         '53': 'Lenkung',
         '54': 'Zugvorrichtung',
         '55': 'andere Mängel',
+        
         '60': 'Regelung des Fußgängerverkehrs durch LZA oder Pol-Bea',
         '61': 'auf Fußgängerüberwegen ohne Regelung durch LZA oder Pol-Bea',
         '62': 'in der Nähe von Kreuzungen, Einmündungen, LZA oder FGÜ bei dichtem Verkehr',
@@ -105,23 +118,28 @@ define('adfchh/model/unfalldaten-legende', [], function () {
         '87': 'anderes Tier auf der Fahrbahn',
         '88': 'sonstiges Hindernis auf der Fahrbahn (ausgen. Pos 43, 44)',
         '89': 'sonstige Ursache mit kurzer Beschreibung',
+        '90': 'Schädigung der Fahrbahnoberfläche'
     };
     var avKeys = {
         '1': 'Moped / Mokick',
         '2': 'Mofa 25',
         '3': 'E-Bikes',
         '4': 'leichtes Kfz (3/4-Rad) bis 50 ccm',
+        
         '11': 'Motorrad über 125 ccm',
         '12': 'Leichtkraftrad / Roller bis 125 ccm',
         '13': 'leichtes Kfz (3/4-Rad) über 50 ccm',
         '15': 'Kraftroller über 125 ccm',
+        
         '21': 'Pkw',
         '22': 'Wohnmobil',
+        
         '31': 'Bus (8-22 Personen)',
         '32': 'Reisebus',
         '33': 'Linienbus',
         '34': 'Schulbus',
         '35': 'Oberleitungsbus',
+        
         '40': 'Liefer-/Lkw bis 3,5t',
         '41': 'Liefer-/Lkw ohne Anhänger',
         '42': 'Liefer-/Lkw bis 3,5t mit Anhänger',
@@ -129,7 +147,9 @@ define('adfchh/model/unfalldaten-legende', [], function () {
         '44': 'Liefer-/Lkw über 3,5 t',
         '45': 'Liefer-/Lkw über 3,5 t mit Anhänger',
         '46': 'Liefer-/Lkw mit Anhänger',
+        
         '48': 'Liefer-/Lkw mit Tank u. Anhänger',
+        
         '51': 'Sattelzug ohne Tank',
         '52': 'Sattelzug mit Tank',
         '53': 'Traktor / Gespann',
@@ -138,14 +158,18 @@ define('adfchh/model/unfalldaten-legende', [], function () {
         '57': 'LKW mit Gefahrgut',
         '58': 'LKW mit Spezialgut (Beton u. ä.)',
         '59': 'sonstige Kraftfahrzeuge',
+        
         '61': 'Straßenbahn, auch Fahrgäste',
         '62': 'Eisenbahn',
+        
         '71': 'Fahrrad',
         '72': 'Pedelec',
+        
         '81': 'Fußgänger',
         '82': 'Handwagen / Karre',
         '83': 'Tiere',
         '84': 'Fußgänger m. Sport o. Spielgerät',
+        
         '91': 'bespanntes Fuhrwerk',
         '92': 'sonstiges Fahrzeug',
         '93': 'andere Personen',
@@ -180,12 +204,14 @@ define('adfchh/model/unfalldaten-legende', [], function () {
             title: 'Longitude',
             dexieName: 'lon',
             converter: 'float',
+            hideInSearch: true,
             fieldNr: [4]
         },
         'lat': {
             title: 'Latitude',
             dexieName: 'lat',
             converter: 'float',
+            hideInSearch: true,
             fieldNr: [5]
         },
         NrBu: {
@@ -200,6 +226,7 @@ define('adfchh/model/unfalldaten-legende', [], function () {
         Datum: {
             title: 'Zeit',
             converter: "date",
+            hideInSearch: true,
             fieldNr: [1,2]
         },
         Zeit: {
@@ -209,6 +236,11 @@ define('adfchh/model/unfalldaten-legende', [], function () {
         Fahrtrichtung: {
             title: 'Fahrtrichtung',
             converter: "richtung",
+            keys: {
+                '0':'absteigend',
+                '1':'aufsteigend',
+                '-1':'unklar'
+            },
             fieldNr: [50]
         },
 
