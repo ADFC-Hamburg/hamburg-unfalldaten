@@ -38,7 +38,7 @@ define('adfchh/view/indexDbLoader', [
             var endZeit=new Date(now+nochZeit);
             txt='Noch ca. '+Math.round(nochZeit/1000)+' Sekunden';
             if (p>30) {
-                txt=txt+' Ende ca. '+endZeit.getHours()+':'+endZeit.getMinutes()+':'+endZeit.getSeconds()+' Uhr';
+                txt=txt+' Ende ca. '+endZeit.toTimeString().substr(0,8)+' Uhr';
             }
             progress.width(p + '%');
             progress.text(txt);
