@@ -1,7 +1,7 @@
 define('adfchh/view/unfalldaten-popup', [
     'adfchh/model/unfalldaten-legende',
     'jquery',
-    'async!https://maps.googleapis.com/maps/api/js?key=AIzaSyB6QF2xcvPjqdiUETbwqd6868_dZZi1QIc'
+    'async!https://maps.googleapis.com/maps/api/js?key=AIzaSyBXLc2B2WQYtsTaJbpCohvqQVZ9iUXyuMU',
 ], function (legende) {
 
     'use strict';
@@ -115,16 +115,17 @@ define('adfchh/view/unfalldaten-popup', [
                 }
             }
             popupj.append(table);
+            e.target._popup.once('contentupdate', function () {
+                new google.maps.StreetViewPanorama(
+                    document.getElementById('street-view'),
+                    {
+                        position: e.target.getLatLng(),
+                        zoom: 1
+                    }); 
+            });
+
             e.target._popup.setContent(popupj[0]);
         });
-
-        new google.maps.StreetViewPanorama(
-                  document.getElementById('street-view'),
-            {
-                position: e.target.getLatLng(),
-                zoom: 1
-            }); 
-
     }
 
     return {
