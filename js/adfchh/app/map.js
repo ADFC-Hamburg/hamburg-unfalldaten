@@ -33,9 +33,14 @@ define('adfchh/app/map', [
            lowerFilterVal,
            markers = model.newMarker(),
            unfallDb = null,
+           allDb = null,
+           radDb = null,
+           max  = 50000,
+           carBtn = $('#car-btn'),
+           bikeBtn = $('#bike-btn'),
            lfnr;
 
-                     
+
        $.each(queryPairs, function() { queryJSON[this.split('=')[0]] = this.split('=')[1]; });
 
        function openComment(lfnr) {
@@ -55,60 +60,16 @@ define('adfchh/app/map', [
                }
            },
            pointToLayer: function(feature /*, latlng*/) {
-//               debugger;
                var t=legende.Typ.icons[feature.properties.typ];
                var c=legende.Kat.color[feature.properties.kat];
-//               console.log(c);
                return new L.Marker(new L.LatLng(feature.geometry.coordinates[1], feature.geometry.coordinates[0]), {
                    icon: L.divIcon({
                        className: 'mmap-marker green '+c,
-//                       iconSize:L.point(20, 30),
                        iconAnchor: [14, 30],
                        iconSize: [26, 26],
                        html: '<div class="icon fa '+t+'" /><div class="arrow" />'
                    })
                });
-           },
-           filter: function(feature) {
-               debugger;
-               total += 1;
-               if (filterKey === '') {
-                   if (!lowerFilterString) {
-                       hits += 1;
-                       return true;
-                   }
-                   $.each(feature.properties, function(k, v) {
-                       var value = v.toLowerCase();
-                       if (value.indexOf(lowerFilterString) !== -1) {
-                           hits += 1;
-                           return true;
-                       }
-                   });
-               } else {
-                   var fKeys;
-                   if (Array.isArray(filterKey)) {
-                       fKeys=filterKey;
-                   } else {
-                       fKeys=[filterKey];
-                   }
-                   var found=false;
-                   for (var i = 0; i <fKeys.length; i++) {
-                       var key=fKeys[i];
-                       var value=feature.properties[key].toLowerCase().strip();
-                       if (value === lowerFilterVal) {
-                           found=true;
-                           break;
-                       }
-                   }
-                   if (filterOp === 'ne') {
-                       found=!found;
-                   }
-                   if (found) {
-                       hits += 1;
-                       return true;
-                   }
-               }
-               return false;
            }
        });
         return points;
@@ -120,36 +81,61 @@ define('adfchh/app/map', [
        }
 
     var markersCallCount=0;
+
+    function lonCheck(item, bounds) {
+        return (item.lon>=bounds.getWest()) && (item.lon<=bounds.getEast());
+    };
+    function latCheck(item, bounds) {
+        return (item.lat>=bounds.getSouth()) && (item.lon<=bounds.getNorth());;
+    };
+    function latLonCheck(item, bounds) {
+        return latCheck(item, bounds) && lonCheck(item, bounds);
+    };
     
-    var addCsvMarkers = function() {
+    function filterOne(item, sFilter) {
+        if (sFilter.id === '*') {
+            return true;
+        }
+        var val=item[sFilter.id];
+        if (!Array.isArray(sFilter.val)) {
+            sFilter.val=[sFilter.val];
+        }
+        var rtn=(sFilter.val.indexOf(val) != -1);
+        if (sFilter.cmp === 'ne' ) {
+            rtn=!rtn;
+        }
+        return rtn;
+    };
+    function filterArrFunc(item, arrIn) {
+        var arr=arrIn.slice(0);
+        var sFilter=arr.shift();
+        if (arr.length>0) {
+            if (sFilter.comp === 'and') {
+                return filterOne(item,sFilter) && filterArrFunc(item, arr);
+            } else {
+                // comp === 'or'
+                return filterOne(item,sFilter) || filterArrFunc(item, arr);
+            }
+        } else {
+            return filterOne(item,sFilter);
+        }
+    }
+
+    function addCsvMarkers(bounds)  {
         markersCallCount++;
         var callCount=markersCallCount;
         console.log('New addCsvMarks call, no:', callCount);
-
-
         hits = 0;
         total = 0;
         var steps=20000;
         //               var max  =82000;
-        var max  = 50000;
+
 
         var pointsNew = createPointLayer();
         //        594272
-        function fillMarkersFromDb(start, callback) {
-            
-            var end=start+steps;
-            if (end>max) {
-                end=max;
-            }
-            var b=map.getBounds();
-            console.log('unfallDb.toArray ',start);
-            console.log(b.getNorth(), b.getSouth());
+        function fillMarkersFromDb(bounds, callback) {
+            console.log(bounds.getNorth(), bounds.getSouth());
             function handleArrayResult(items) {
-                if (callCount<markersCallCount) {
-                    console.log('cancel old FillMarkers', callCount);
-                    return;
-                }
-                
                 items.forEach(function (item) {
                     if (callCount<markersCallCount) {
                         console.log('cancel old FillMarkers', callCount);
@@ -161,7 +147,6 @@ define('adfchh/app/map', [
                     var m=new L.Marker([item.lat, item.lon ], {
                         icon: L.divIcon({
                             className: 'mmap-marker green '+c,
-                            //                       iconSize:L.point(20, 30),
                             iconAnchor: [14, 30],
                             iconSize: [26, 26],
                             html: '<div class="icon fa '+t+'" /><div class="arrow" />'
@@ -169,7 +154,7 @@ define('adfchh/app/map', [
                     });
                     m.id=item.id;
                     m.LfNr=item.LfNr;
-                    m.Jahr=item.Jahr
+                    m.Jahr=item.Jahr;
                     var popup='<div>Loading...</div>';
                     m.bindPopup(popup, model.popupOpts);
                     m.on('click', function (e) {
@@ -191,53 +176,12 @@ define('adfchh/app/map', [
             };
 
             var sFilterArr=searchbox.getSearchCondition();
-            function lonCheck(item) {
-                return (item.lon>=b.getWest()) && (item.lon<=b.getEast());
-            };
-            function latCheck(item) {
-                return (item.lat>=b.getSouth()) && (item.lon<=b.getNorth());;
-            };
-            function latLonCheck(item) {
-                return latCheck(item) && lonCheck(item);
-            };
-
-            function filterOne(item, sFilter) {
-                if (sFilter.id === '*') {
-                    return true;
-                }
-                var val=item[sFilter.id];
-                if (!Array.isArray(sFilter.val)) {
-                    sFilter.val=[sFilter.val];
-                }
-                var rtn=(sFilter.val.indexOf(val) != -1);
-                if (sFilter.cmp === 'ne' ) {
-                    rtn=!rtn;
-                }
-                return rtn;
-            };
-            function filterArrFunc(item, arrIn) {
-                var arr=arrIn.slice(0);
-                var sFilter=arr.shift();
-                if (arr.length>0) {
-                    if (sFilter.comp === 'and') {
-                        return filterOne(item,sFilter) && filterArrFunc(item, arr);
-                    } else {
-                        // comp === 'or'
-                        return filterOne(item,sFilter) || filterArrFunc(item, arr);
-                    }
-                } else {
-                    return filterOne(item,sFilter);
-                }
-            }
             function filterFunc(item) {
-                if (!lonCheck(item)) {
-                    return false;
-                }//else
-                return filterArrFunc(item, sFilterArr);
-                
+                return (latLonCheck(item,bounds) && filterArrFunc(item, sFilterArr));
             }
+            
             unfallDb
-                .where('lat').between(b.getSouth(), b.getNorth())
+                .where('lat').between(bounds.getSouth(), bounds.getNorth())
                 .and(filterFunc)
                 .limit(max).toArray(handleArrayResult);
         };
@@ -246,7 +190,7 @@ define('adfchh/app/map', [
         statusbar.show();
         statusbar.setText('Lade Daten ...');
         statusbar.startProgress();
-        fillMarkersFromDb(0, function (){
+        fillMarkersFromDb(bounds, function (){
             console.log('unfallDb.each stop');
             if (callCount<markersCallCount) {
                 console.log('cancel old FillMarkersFromDb', callCount);
@@ -275,42 +219,75 @@ define('adfchh/app/map', [
                     openMarker=0;
                 });
             }
-            if (total > 0) {
-                $('#search-results').html('Zeige ' + hits + ' von ' + total + '.');
-            }
         });
         return false;
     };
 
+    map.addLayer(markers);
 
-       function arrayToSet(a) {
-           var temp = {};
-           for (var i = 0; i < a.length; i++)
-               temp[a[i]] = true;
-           var r = [];
-           for (var k in temp)
-               r.push(k);
-           return r;
-       }
-
-
-       map.addLayer(markers);
-
-
+    var oldBounds=null;
+    var BOUNDS_PAD=0.3;
+    function searchFunc() {
+        oldBounds= map.getBounds().pad(BOUNDS_PAD);
+        addCsvMarkers(oldBounds);
+    };
+    function moveFunc() {
+        var newBounds=null;
+        if (oldBounds === null ) {
+            newBounds= map.getBounds().pad(BOUNDS_PAD);
+        } else {
+            newBounds= map.getBounds();
+            if ((oldBounds.contains(newBounds)) && (hits < max)) {
+                return;
+            } else {
+                newBounds= newBounds.pad(BOUNDS_PAD);
+            }
+        }
+        oldBounds= newBounds;
+        addCsvMarkers(oldBounds);
+    };
+    var oldModus='bike';
+    function setDbModus(modus) {
+        if (modus === oldModus) {
+            return;
+        }
+        oldModus= modus;
+        var activeBtn,passiveBtn;
+        if (modus == 'car') {
+            activeBtn= carBtn;
+            passiveBtn = bikeBtn;
+            unfallDb = allDb;
+        } else {
+            passiveBtn= carBtn;
+            activeBtn = bikeBtn;
+            unfallDb = radDb;
+        }
+        activeBtn.addClass('btn-dark');
+        activeBtn.removeClass('btn-outline-dark');
+        passiveBtn.removeClass('btn-dark');
+        passiveBtn.addClass('btn-outline-dark');
+        searchFunc();
+    }
     $(document).ready( function() {
 
-        indexDbUpdater( function (newUnfallDb) {
+        indexDbUpdater( function (newUnfallDb, newRadDb) {
             if (unfallDb == null) {
-                unfallDb=newUnfallDb;
-                map.on('moveend', addCsvMarkers);
+                unfallDb=newRadDb;
+                allDb= newUnfallDb;
+                radDb= newRadDb;
+                map.on('moveend', moveFunc);
             }
-            //var csv="";
-               //populateTypeAhead(csv, fieldSeparator);
-               //typeAheadSource = arrayToSet(typeAheadSource);
-            //$('#filter-string').typeahead({source: typeAheadSource});
-            searchbox.setSearchFunc(addCsvMarkers);
-            addCsvMarkers();
-            
+            searchbox.setSearchFunc(searchFunc);
+            searchFunc();
+            bikeBtn.click(function (e) {
+                e.preventDefault();
+                setDbModus('bike');
+            });
+            carBtn.click(function (e) {
+                e.preventDefault();
+                setDbModus('car');
+            });
+
         });
 
        

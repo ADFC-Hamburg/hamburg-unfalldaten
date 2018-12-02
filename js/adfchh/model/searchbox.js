@@ -26,6 +26,15 @@ define('adfchh/model/searchbox', [
                'and': ' und ',
                'or': ' oder '
            };
+           function getSearchCondition() {
+               var rtnFilter=moreFilter.slice(0);
+               rtnFilter.push(filter);
+               console.log('rtnFilter', rtnFilter);
+               console.log('mFilter', moreFilter);
+               return rtnFilter;
+           };
+           
+
            function removeMore() {
                moreDiv.html('');
            };
@@ -217,7 +226,7 @@ define('adfchh/model/searchbox', [
                removeMore();
                moreFilter=[];
                filter={id:'*',cmp:'eq',val:''};
-               searchFunc();
+               searchFunc(getSearchCondition());
            });
 
            function calcFilter() {
@@ -288,17 +297,9 @@ define('adfchh/model/searchbox', [
            btnSubmit.click(function (e) {
                e.preventDefault();
                calcFilter();
-               searchFunc();
+               searchFunc(getSearchCondition());
                return true;
            });
-           function getSearchCondition() {
-               var rtnFilter=moreFilter.slice(0);
-               rtnFilter.push(filter);
-               console.log('rtnFilter', rtnFilter);
-               console.log('mFilter', moreFilter);
-               return rtnFilter;
-           };
-           
            return {
                'searchGroups': searchGroups,
                'setSearchFunc': setSearchFunc,

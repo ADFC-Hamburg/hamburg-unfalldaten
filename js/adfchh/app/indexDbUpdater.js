@@ -12,30 +12,50 @@ define('adfchh/app/indexDbUpdater', [
     //var END_JAHR = 2009;
     var END_JAHR = 2017;
 
-    const UNFALLDB= 'unfalldaten';
+    const UNFALLDB= 'unfalldaten1';
+    const UNFALL_TABLE = 'unfalldaten';
+    const RAD_TABLE = 'raddaten';
     const DEL_UNFALLDB = [ 'unfalldaten'];
-    function loadUnfalldaten(fileContent, unfallDb, jahr) {
-        var def=$.Deferred();
-        var lines = fileContent.split("\n");
+
+    function convertCSVtoArr(startId, lines) {
         var arr=[];
-        view.setText('Konvertiere Jahr '+jahr+ ' von '+END_JAHR+' ('+lines.length+' Unfälle)');
         for (var i = 1, len = lines.length; i < len; i++) {
             if (lines[i] !== "") {
-                var obj=convertLineToObject(lines[i]);
+                var obj = convertLineToObject(lines[i]);
+                obj['id'] = startId++;
                 arr.push(obj);
-                def.notify(obj.Jahr, i, lines.length)
             }
         }
-
+        return arr;
+    }
+    function filterRad(obj) {
+        var radArr=[ 3,71,72,81,82,83,85 ];
+        var rtn= ((radArr.indexOf(obj.AV2) !== -1) ||
+                  (radArr.indexOf(obj.AV1) !== -1));
+        return rtn;
+    }
+    function filterArr(arr, filterFunc) {
+        var rtnArr=[];
+        for (var i=0, len = arr.length; i< len ; i++) {
+            if (filterFunc(arr[i])) {
+                rtnArr.push(arr[i]);
+            }
+        }
+        return rtnArr;
+    }
+    function loadUnfalldaten(arr, unfallDb, jahr, myView) {
+        var def=$.Deferred();
         var countPerAdd=1000;
         function addToDb(startVal) {
             var endVal=startVal+countPerAdd;
             var partArr=arr.slice(startVal, endVal);
             console.log('start indexdb', jahr,' ',startVal, new Date());
-            view.setText('Fülle IndexDB Jahr '+jahr+ ' von '+END_JAHR+' ('+startVal+' von '+lines.length+' Unfälle)');
-            view.setYearProgress(jahr,(startVal/lines.length)*100,START_JAHR, END_JAHR);
+            if (myView) {
+                myView.setText('Fülle IndexDB Jahr '+jahr+ ' von '+END_JAHR+' ('+startVal+' von '+arr.length+' Unfälle)');
+                myView.setYearProgress(jahr,(startVal/arr.length)*100,START_JAHR, END_JAHR);
+            }
             unfallDb.bulkAdd(partArr).then(function () {
-                console.log('stop indexdb', jahr, new Date(), endVal, ' ',arr.length)
+                console.log('stop indexdb', jahr, new Date(), endVal, ' ',arr.length);
                 if (endVal >arr.length) {
                     def.resolve();
                 } else {
@@ -46,6 +66,8 @@ define('adfchh/app/indexDbUpdater', [
         addToDb(0);
         return def;
     }
+
+    
     function parseGeschlecht( geschl) {
         if (geschl==="m") {
             return 0;
@@ -166,7 +188,7 @@ define('adfchh/app/indexDbUpdater', [
             tileCalc.lon2tile(rtn['lon'],tileCalc.stdzoom);
         return rtn;
     }
-    function fetchUnfalldatenAb(jahr, unfallDb, callback) {
+    function fetchUnfalldatenAb(jahr, unfallTbl, radTbl, startId, callback) {
         console.log('load Unfalldaten in IndexDB');
         view.setYearProgress(jahr,0,START_JAHR, END_JAHR);
         view.setText('Downloade Jahr '+jahr+ ' von '+END_JAHR);
@@ -175,15 +197,20 @@ define('adfchh/app/indexDbUpdater', [
             'dataType': 'text',
             'url': url,
             'data': {},
-            'success': function (data) {
-                loadUnfalldaten(data, unfallDb, jahr).then( function () {
-                    if (jahr<END_JAHR) {
-                        jahr++;
-                        fetchUnfalldatenAb(jahr, unfallDb, callback);
-                    } else {
-                        callback();
-                    }
-                    
+            'success': function (fileContent) {
+                var lines = fileContent.split("\n");
+                view.setText('Konvertiere Jahr '+jahr+ ' von '+END_JAHR+' ('+lines.length+' Unfälle)');
+                var arr = convertCSVtoArr(startId, lines);
+                loadUnfalldaten(arr, unfallTbl, jahr, view).then( function () {
+                    var radArr = filterArr(arr, filterRad);
+                    loadUnfalldaten(radArr, radTbl, jahr, null). then( function () {
+                        if (jahr<END_JAHR) {
+                            jahr++;
+                            fetchUnfalldatenAb(jahr, unfallTbl, radTbl, startId + arr.length, callback);
+                        } else {
+                            callback();
+                        }
+                    });
                 });
             }
         });
@@ -191,8 +218,11 @@ define('adfchh/app/indexDbUpdater', [
     }
 
     function indexDbUpdater(callback) {
+        DEL_UNFALLDB.forEach(function (db) {
+            Dexie.delete(db);
+        });
         var db = new Dexie(UNFALLDB);
-        var databaseStr='id++,tile';
+        var databaseStr='id,tile';
         Object.keys(model).forEach(function (key) {
             if (! model[key].ignore) {
                 if (model[key].dexieName) {
@@ -212,19 +242,21 @@ define('adfchh/app/indexDbUpdater', [
         view.setText('Prüfe Datenbank..');
 
         var storArr={};
-        storArr[UNFALLDB]=databaseStr;
+        storArr[UNFALL_TABLE]=databaseStr;
+        storArr[RAD_TABLE]=databaseStr;
+        
         db.version(1).stores(storArr);
         console.log(storArr);
-        db.table(UNFALLDB).count().then(function (count) {
+        db.table(UNFALL_TABLE).count().then(function (count) {
             if (count >= MIN_COUNT) {
                 console.log('data loaded count=',count);
                 view.hide();
-                callback(db.unfalldaten);
+                callback(db.table(UNFALL_TABLE), db.table(RAD_TABLE));
             } else {
                 view.setHint('Wenn Sie ihren Browser Cache NICHT löschen, bleiben die Daten später erhalten und müssen nicht erneut geladen werden.');
-                fetchUnfalldatenAb(START_JAHR, db.table(UNFALLDB), function () {
+                fetchUnfalldatenAb(START_JAHR, db.table(UNFALL_TABLE), db.table(RAD_TABLE), 0, function () {
                     view.hide();
-                    callback(db[UNFALLDB]);
+                    callback(db.table(UNFALL_TABLE), db.table(RAD_TABLE));
                 });
                 
             }
