@@ -22,8 +22,8 @@ define('adfchh/app/map', [
 
        var fieldSeparator = '\t',
            map=model.createMap(),
-           query = window.location.search.substring(1), 
-           queryPairs = query.split('&'), 
+           query = window.location.search.substring(1),
+           queryPairs = query.split('&'),
            queryJSON = {},
            hits = 0,
            total = 0,
@@ -52,11 +52,11 @@ define('adfchh/app/map', [
     function createPointLayer() {
        var points = new L.FeatureGroup(null, {
            onEachFeature: function (feature, layer) {
-            
+
                if ( feature.properties.lfnr == lfnr) {
      // hier den Marker merken und dann spaeter oeffnen
                    openMarker = layer;
-                   layer.openPopup(); 
+                   layer.openPopup();
                }
            },
            pointToLayer: function(feature /*, latlng*/) {
@@ -91,7 +91,7 @@ define('adfchh/app/map', [
     function latLonCheck(item, bounds) {
         return latCheck(item, bounds) && lonCheck(item, bounds);
     };
-    
+
     function filterOne(item, sFilter) {
         if (sFilter.id === '*') {
             return true;
@@ -141,7 +141,7 @@ define('adfchh/app/map', [
                         console.log('cancel old FillMarkers', callCount);
                         return;
                     }
-                    
+
                     var t=legende.Typ.icons[item.Typ];
                     var c=legende.Kat.color[item.Kat];
                     var m=new L.Marker([item.lat, item.lon ], {
@@ -152,9 +152,7 @@ define('adfchh/app/map', [
                             html: '<div class="icon fa '+t+'" /><div class="arrow" />'
                         })
                     });
-                    m.id=item.id;
-                    m.LfNr=item.LfNr;
-                    m.Jahr=item.Jahr;
+                    m.Id=item.Id;
                     var popup='<div>Loading...</div>';
                     m.bindPopup(popup, model.popupOpts);
                     m.on('click', function (e) {
@@ -169,7 +167,7 @@ define('adfchh/app/map', [
                     console.log('cancel old FillMarkers', callCount);
                     return;
                 }
-                
+
                 console.log(items.length);
                 hits= items.length;
                 callback();
@@ -179,13 +177,29 @@ define('adfchh/app/map', [
             function filterFunc(item) {
                 return (latLonCheck(item,bounds) && filterArrFunc(item, sFilterArr));
             }
-            
-            unfallDb
-                .where('lat').between(bounds.getSouth(), bounds.getNorth())
+
+            // fixme mehr params
+
+            var stmt=unfallDb.prepare("SELECT id, lat, lon, Typ, Kat FROM unfall WHERE lat>:south AND lat<=:north AND lon>:west AND lon<=:east LIMIT :max;",{
+                ':south':bounds.getSouth(),
+                ':north':bounds.getNorth(),
+                ':west': bounds.getWest(),
+                ':east': bounds.getEast(),
+                ':max': max
+            });
+
+//            console.log(stmt.get({south:bounds.getSouth(), north:bounds.getNorth()}));
+
+            var arr=[];
+            while (stmt.step()) {
+                arr.push(stmt.getAsObject());
+/*                .where('lat').between(bounds.getSouth(), bounds.getNorth())
                 .and(filterFunc)
-                .limit(max).toArray(handleArrayResult);
+ .limit(max).toArray(handleArrayResult);*/
+            };
+            handleArrayResult(arr);
         };
-            
+
         console.log('unfallDb.toArray start');
         statusbar.show();
         statusbar.setText('Lade Daten ...');
@@ -199,7 +213,7 @@ define('adfchh/app/map', [
             //map.removeLayer(markers);
             markers.addLayer(pointsNew);
             markers.removeLayer(points);
-            
+
             points.clearLayers();
             points= pointsNew;
             statusbar.stopProgress();
@@ -212,7 +226,7 @@ define('adfchh/app/map', [
             //markers = model.newMarker();
             //markers.addLayer(points);
             //map.addLayer(markers);
-            
+
             if (openMarker !== 0) {
                 markers.zoomToShowLayer(openMarker, function () {
                     openMarker.fire('click');
@@ -290,7 +304,7 @@ define('adfchh/app/map', [
 
         });
 
-       
+
 
     });
 

@@ -87,7 +87,7 @@ define('adfchh/model/unfalldaten-legende', [], function () {
         '53': 'Lenkung',
         '54': 'Zugvorrichtung',
         '55': 'andere Mängel',
-        
+
         '60': 'Regelung des Fußgängerverkehrs durch LZA oder Pol-Bea',
         '61': 'auf Fußgängerüberwegen ohne Regelung durch LZA oder Pol-Bea',
         '62': 'in der Nähe von Kreuzungen, Einmündungen, LZA oder FGÜ bei dichtem Verkehr',
@@ -125,21 +125,21 @@ define('adfchh/model/unfalldaten-legende', [], function () {
         '2': 'Mofa 25',
         '3': 'E-Bikes',
         '4': 'leichtes Kfz (3/4-Rad) bis 50 ccm',
-        
+
         '11': 'Motorrad über 125 ccm',
         '12': 'Leichtkraftrad / Roller bis 125 ccm',
         '13': 'leichtes Kfz (3/4-Rad) über 50 ccm',
         '15': 'Kraftroller über 125 ccm',
-        
+
         '21': 'Pkw',
         '22': 'Wohnmobil',
-        
+
         '31': 'Bus (8-22 Personen)',
         '32': 'Reisebus',
         '33': 'Linienbus',
         '34': 'Schulbus',
         '35': 'Oberleitungsbus',
-        
+
         '40': 'Liefer-/Lkw bis 3,5t',
         '41': 'Liefer-/Lkw ohne Anhänger',
         '42': 'Liefer-/Lkw bis 3,5t mit Anhänger',
@@ -147,9 +147,9 @@ define('adfchh/model/unfalldaten-legende', [], function () {
         '44': 'Liefer-/Lkw über 3,5 t',
         '45': 'Liefer-/Lkw über 3,5 t mit Anhänger',
         '46': 'Liefer-/Lkw mit Anhänger',
-        
+
         '48': 'Liefer-/Lkw mit Tank u. Anhänger',
-        
+
         '51': 'Sattelzug ohne Tank',
         '52': 'Sattelzug mit Tank',
         '53': 'Traktor / Gespann',
@@ -158,18 +158,18 @@ define('adfchh/model/unfalldaten-legende', [], function () {
         '57': 'LKW mit Gefahrgut',
         '58': 'LKW mit Spezialgut (Beton u. ä.)',
         '59': 'sonstige Kraftfahrzeuge',
-        
+
         '61': 'Straßenbahn, auch Fahrgäste',
         '62': 'Eisenbahn',
-        
+
         '71': 'Fahrrad',
         '72': 'Pedelec',
-        
+
         '81': 'Fußgänger',
         '82': 'Handwagen / Karre',
         '83': 'Tiere',
         '84': 'Fußgänger m. Sport o. Spielgerät',
-        
+
         '91': 'bespanntes Fuhrwerk',
         '92': 'sonstiges Fahrzeug',
         '93': 'andere Personen',
@@ -180,7 +180,7 @@ define('adfchh/model/unfalldaten-legende', [], function () {
         'KRD': 'Motorrad',
         'LKW': 'LKW',
         'PKW': 'PKW',
-        'RF': 'Radfahrer', 
+        'RF': 'Radfahrer',
         'SOF': 'Sonderfahrzeug',
     };
     var popupOpt = {
@@ -309,7 +309,7 @@ define('adfchh/model/unfalldaten-legende', [], function () {
             keys: charKeys,
             fieldNr: [17]
         },
- 
+
         Char3: {
             title: 'Charakteristik 3',
             descr: 'Charakteristik Unfallstelle 3',
@@ -387,7 +387,7 @@ define('adfchh/model/unfalldaten-legende', [], function () {
                 '1': 'Unfall mit Getöteten',
                 '2': 'Unfall mit Schwerverletzten',
                 '3': 'Unfall mit Leichtverletzten',
-                '4': 'Unfall mit schw. Sachschaden',     
+                '4': 'Unfall mit schw. Sachschaden',
                 '5': 'sonstiger Sachschadensunfall',
                 '6': 'Unfall unter Einfluss von berauschenden Mittel'
             },
@@ -395,7 +395,7 @@ define('adfchh/model/unfalldaten-legende', [], function () {
                 '1': 'red',
                 '2': 'orange',
                 '3': 'yellow',
-                '4': 'LightCyan',     
+                '4': 'LightCyan',
                 '5': 'silver',
                 '6': 'blue'
             },
@@ -476,12 +476,14 @@ define('adfchh/model/unfalldaten-legende', [], function () {
             keys: fahrzeugKeys,
             fieldNr: [38],
             ignore: true,
+            // siehe AV1
         },
         Bet_02: {
             title: 'nächster Beteiligter',
             keys: fahrzeugKeys,
             fieldNr: [39],
             ignore: true,
+            // siehe AV2
         },
         Unf_Typ: {
             descr: 'siehe Typ',

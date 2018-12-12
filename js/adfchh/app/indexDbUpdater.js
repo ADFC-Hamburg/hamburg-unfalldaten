@@ -1,14 +1,14 @@
 define('adfchh/app/indexDbUpdater', [
-    'dexie',
+    'sql',
     'adfchh/model/unfalldaten-legende',
     'adfchh/view/indexDbLoader',
     'adfchh/model/lat-lon-tile-calc',
-], function (Dexie, model, view, tileCalc) {
+], function (SQL, model, view, tileCalc) {
 
     'use strict';
 
     var MIN_COUNT=594272;
-    var START_JAHR = 2009;
+    var START_JAHR = 2016;
     //var END_JAHR = 2009;
     var END_JAHR = 2017;
 
@@ -54,20 +54,27 @@ define('adfchh/app/indexDbUpdater', [
                 myView.setText('Fülle IndexDB Jahr '+jahr+ ' von '+END_JAHR+' ('+startVal+' von '+arr.length+' Unfälle)');
                 myView.setYearProgress(jahr,(startVal/arr.length)*100,START_JAHR, END_JAHR);
             }
-            unfallDb.bulkAdd(partArr).then(function () {
-                console.log('stop indexdb', jahr, new Date(), endVal, ' ',arr.length);
-                if (endVal >arr.length) {
-                    def.resolve();
-                } else {
-                    addToDb(endVal);
-                }
+            var strArr="";
+            partArr.forEach(function (e) {
+                var str=
+                        "INSERT INTO unfalldb VALUES ("+e.id+",'"+e.tile+"',"+e.Kl+','+e.lon+','+e.lat +','+e.NrBu +','+e.LfNr +','+e.Datum.getTime() +','+e.Fahrtrichtung+','+e.Zif +','+e.OL +','+e.Gt +','+e.Sv +','+e.Lv +','+e.Bet +','+e.Art +','+e.Charakteristik +','+e.Besonderheiten+','+e.LZ +','+e.L +','+e.SZ +','+e.AH +','+e.Kat +','+e.Typ +','+e.Urs01 +','+e.weitereUrsachen+','+e.AV1 +','+e.AV2 +','+e.Jahr +",'"+e.Kz_Bet1 +"','"+e.Kz_Bet2 +"',"+e.Geschl_01 +','+e.Geschl_02 +','+e.Alter_01 +','+e.Alter_02+');';
+                str=str.split("NaN").join('null');
+                str=str.split("undefined").join('null');
+                strArr=strArr+str;
             });
+            unfallDb.exec(strArr);
+            console.log('stop indexdb', jahr, new Date(), endVal, ' ',arr.length);
+            if (endVal >arr.length) {
+                def.resolve();
+            } else {
+                addToDb(endVal);
+            };
         };
         addToDb(0);
         return def;
     }
 
-    
+
     function parseGeschlecht( geschl) {
         if (geschl==="m") {
             return 0;
@@ -127,7 +134,7 @@ define('adfchh/app/indexDbUpdater', [
             'Zulassung': z
         };
     }
-    
+
     function convertLineToObject (line ) {
         var field = line.trim().split("\t");
         var rtn={};
@@ -188,8 +195,9 @@ define('adfchh/app/indexDbUpdater', [
             tileCalc.lon2tile(rtn['lon'],tileCalc.stdzoom);
         return rtn;
     }
+
     function fetchUnfalldatenAb(jahr, unfallTbl, radTbl, startId, callback) {
-        console.log('load Unfalldaten in IndexDB');
+       console.log('load Unfalldaten in IndexDB');
         view.setYearProgress(jahr,0,START_JAHR, END_JAHR);
         view.setText('Downloade Jahr '+jahr+ ' von '+END_JAHR);
         var url='data/Geodaten'+jahr+'anonymisiert.txt';
@@ -202,26 +210,23 @@ define('adfchh/app/indexDbUpdater', [
                 view.setText('Konvertiere Jahr '+jahr+ ' von '+END_JAHR+' ('+lines.length+' Unfälle)');
                 var arr = convertCSVtoArr(startId, lines);
                 loadUnfalldaten(arr, unfallTbl, jahr, view).then( function () {
-                    var radArr = filterArr(arr, filterRad);
-                    loadUnfalldaten(radArr, radTbl, jahr, null). then( function () {
+/*                    var radArr = filterArr(arr, filterRad);
+                    loadUnfalldaten(radArr, radTbl, jahr, null). then( function () {*/
                         if (jahr<END_JAHR) {
                             jahr++;
                             fetchUnfalldatenAb(jahr, unfallTbl, radTbl, startId + arr.length, callback);
                         } else {
+                            debugger;
                             callback();
                         }
-                    });
+//                    });
                 });
             }
         });
-                         
+
     }
 
     function indexDbUpdater(callback) {
-        DEL_UNFALLDB.forEach(function (db) {
-            Dexie.delete(db);
-        });
-        var db = new Dexie(UNFALLDB);
         var databaseStr='id,tile';
         Object.keys(model).forEach(function (key) {
             if (! model[key].ignore) {
@@ -239,30 +244,43 @@ define('adfchh/app/indexDbUpdater', [
             }
         });
         view.show();
-        view.setText('Prüfe Datenbank..');
+        view.setText('Lade Datenbank..');
 
         var storArr={};
-        storArr[UNFALL_TABLE]=databaseStr;
-        storArr[RAD_TABLE]=databaseStr;
-        
-        db.version(1).stores(storArr);
+        console.log(databaseStr);
+/*        storArr[UNFALL_TABLE]=databaseStr;
+ storArr[RAD_TABLE]=databaseStr;*/
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', 'data/unfall.db', true);
+        xhr.responseType = 'arraybuffer';
+        xhr.onprogress = function (event) {
+            view.setProgress(98*event.loaded/event.total);
+        };
+        xhr.onload=function(e) {
+            view.hide();
+            var uInt8Array = new Uint8Array(this.response);
+            var db = new SQL.Database(uInt8Array);
+
+/*        db.exec("CREATE TABLE unfalldb (id int, tile string,Kl int,lon double,lat double,NrBu int,LfNr int,Datum int,Fahrtrichtung int,Zif int,OL int,Gt int,Sv int,Lv int,Bet int,Art int,Charakteristik int,Besonderheiten,LZ int,L int,SZ int,AH int,Kat int,Typ int,Urs01 int,weitereUrsachen int,AV1 int,AV2 int,Jahr int,Kz_Bet1 string,Kz_Bet2 string,Geschl_01 int,Geschl_02 int,Alter_01 int,Alter_02 int);");
+/*        debugger;
         console.log(storArr);
-        db.table(UNFALL_TABLE).count().then(function (count) {
+        db.table(UNFALL_TABLE).count().then(function (count) {*
             if (count >= MIN_COUNT) {
                 console.log('data loaded count=',count);
                 view.hide();
                 callback(db.table(UNFALL_TABLE), db.table(RAD_TABLE));
             } else {
                 view.setHint('Wenn Sie ihren Browser Cache NICHT löschen, bleiben die Daten später erhalten und müssen nicht erneut geladen werden.');
-                fetchUnfalldatenAb(START_JAHR, db.table(UNFALL_TABLE), db.table(RAD_TABLE), 0, function () {
-                    view.hide();
-                    callback(db.table(UNFALL_TABLE), db.table(RAD_TABLE));
-                });
-                
-            }
-        });
+                fetchUnfalldatenAb(START_JAHR, db, db, 0, function () {
+                    view.hide();*/
+                    callback(db, db);
+        };
+
+/*            }
+ });*/
+        xhr.send();
     };
 
     return indexDbUpdater;
-                                               
+
 });

@@ -19,13 +19,11 @@ define('adfchh/view/unfalldaten-popup', [
     calcKeysToLower();
 
     function click(e, openComment, unfallDb) {
-        var id=e.target.id;
-        var lfnr=e.target.LfNr;
-        var jahr=e.target.Jahr;
-        var url=window.location.href.split('?')[0]+'?lfnr='+lfnr+'&jahr='+jahr,
-            shareTitle='Fahrradunfall+Nr.+'+lfnr+'+aus+Jahr+'+jahr,
+        var id=e.target.Id;
+        var url=window.location.href.split('?')[0]+'?id='+id,
+            shareTitle='Fahrradunfall+Nr.+'+id,
             popupj= $('<div>').addClass('popup-content').append($('<div id="street-view">'));
-    
+
 //     var popup = '<div class="popup-content"><div id="street-view"></div>';
         var share='<div class="share">';
         share+='<a href="'+url+'" title="Link zu diesem Marker"><i class="fa fa-link"></i></a>';
@@ -56,17 +54,20 @@ define('adfchh/view/unfalldaten-popup', [
                     }
                 }
                 if ((data.published+data.waiting)===0) {
-                    td.append($('<a>').text('Schreibe den ersten Kommentar!').on('click', function () {openComment(lfnr);}));
+                    td.append($('<a>').text('Schreibe den ersten Kommentar!').on('click', function () {openComment(id);}));
                 } else {
                     td.append($('<button type="button" class="btn btn-info btn-xs" data-target="#comments">')
       .text('Kommentare')
-      .on('click', function () {openComment(lfnr);}));
+      .on('click', function () {openComment(id);}));
                 }
             }
         });
 
         table.append($('<tr>').append($('<th>').html('Kommentare'+share)).append(td));
-        unfallDb.get({id: e.target.id}, function (item) {
+
+        var stmt=unfallDb.prepare('SELECT * FROM unfall WHERE id=?;',[ e.target.Id]);
+        stmt.step();
+        var item=stmt.getAsObject();
             for (var clave in item) {
                 var title = keysLowerToUpper[clave];
                 if (title === undefined) {
@@ -83,7 +84,7 @@ define('adfchh/view/unfalldaten-popup', [
                     if (isNaN(attr)) {
                         ignore = true;
                         attr = '';
-                    } 
+                    }
                     attr=attr.toString();
                 }
 
@@ -100,7 +101,7 @@ define('adfchh/view/unfalldaten-popup', [
                     if (legende[title].descr !== undefined) {
                         tooltip = legende[title].descr;
                     }
-                    // do this as last operation                                                                                                                                   
+                    // do this as last operation
                     if (legende[title].title !== undefined) {
                         title=legende[title].title;
                     }
@@ -121,11 +122,11 @@ define('adfchh/view/unfalldaten-popup', [
                     {
                         position: e.target.getLatLng(),
                         zoom: 1
-                    }); 
+                    });
             });
 
             e.target._popup.setContent(popupj[0]);
-        });
+//        });
     }
 
     return {
